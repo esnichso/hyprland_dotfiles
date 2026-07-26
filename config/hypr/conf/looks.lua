@@ -54,9 +54,17 @@ hl.config({
       size   = 6,
       passes = 2,
 
-      -- Floating windows ignore tiled windows when blurring. Big speedup and
-      -- looks better — the launcher blurs the wallpaper, not the terminal.
-      xray = true,
+      -- Deliberately OFF (which is also upstream's default).
+      --
+      -- xray makes floating windows ignore tiled windows in their blur, which
+      -- is cheaper — but it also means a translucent floating window composites
+      -- against the wallpaper layer instead of the window actually behind it.
+      -- A floating terminal over a browser then renders as a flat rectangle of
+      -- wallpaper colour and looks completely opaque.
+      --
+      -- Turn it back on only if floating blur costs too much performance, and
+      -- accept that see-through stops working for floating windows.
+      xray = false,
 
       -- Blur right-click menus and popups too, otherwise they look pasted on.
       popups            = true,

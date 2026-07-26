@@ -133,8 +133,9 @@ hyprctl dispatch 'hl.dsp.submap("reset")'
 
 ## Wallpapers
 
-Drop images into `~/Pictures/wallpapers/`. hyprpaper picks one at random and
-rotates every 15 minutes.
+Drop images into `~/Pictures/wallpapers/`. hyprpaper picks one at random when
+the session starts and then leaves it alone — it never changes while you're
+working.
 
 | Keys | Action |
 | --- | --- |
@@ -146,5 +147,5 @@ Set one directly, without restarting anything:
 hyprctl hyprpaper wallpaper ",~/Pictures/wallpapers/foo.jpg,cover"
 ```
 
-To stop rotating and pin a single image, point `path` at a file rather than a
-directory in `config/hypr/hyprpaper.conf`.
+To pin one image permanently, point `path` at a file rather than a directory
+in `config/hypr/hyprpaper.conf`.
