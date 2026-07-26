@@ -155,6 +155,12 @@ hl.config({
     -- Adaptive sync. 2 = fullscreen only, which avoids flicker in normal
     -- desktop use while still helping video and games.
     vrr = 2,
+
+    -- If the lock screen crashes, allow a new one to take over instead of
+    -- stranding you on the "lockscreen app died" screen with no way back
+    -- except a TTY. Off by default upstream; there is no good reason for it
+    -- to be off on a machine you actually use.
+    allow_session_lock_restore = true,
   },
 
   ecosystem = {

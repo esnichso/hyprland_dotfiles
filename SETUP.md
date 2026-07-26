@@ -290,6 +290,11 @@ Work down the list. Anything that fails, tell me and I'll fix it in the repo.
 - [ ] USB stick automounts (udiskie)
 - [ ] `hyprlock` locks and unlocks; idle timeout locks on its own
 
+> Test hyprlock by running it **from a terminal** the first time, not from the
+> keybind: `hyprlock --verbose`. If it dies you see the error, instead of being
+> stranded on the "lockscreen app died" screen. Recover from that with a TTY
+> (`Ctrl+Alt+F3`) and `hyprctl --instance 0 eval 'hl.clear_crashed_lockscreen()'`.
+
 ## When something breaks
 
 Hyprland gives you emergency binds even with a broken config: **SUPER+Q** terminal,
