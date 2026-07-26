@@ -113,6 +113,7 @@ no file pickers, no password prompts, freezing apps).
 | Package | Repo | Version | Why |
 | --- | --- | --- | --- |
 | `ttf-jetbrains-mono-nerd` | extra | 3.4.0 | Terminal font, with the Nerd Font icon glyphs the bar falls back to. |
+| `inter-font` | extra | 4.1 | Proportional UI font for the bar, launcher, notifications and GTK/Qt apps. Designed for interfaces; one of the most widely used UI faces there is. |
 | `ttf-nerd-fonts-symbols` | extra | 3.4.0 | Icon fallback for everything else. |
 | `noto-fonts` | extra | 2026.07.01 | Base sans-serif. Without one you get literal squares. |
 | `noto-fonts-emoji` | extra | 2.051 | Colour emoji. |
@@ -129,7 +130,6 @@ no file pickers, no password prompts, freezing apps).
 | --- | --- | --- |
 | `catppuccin-gtk-theme-mocha` | 1.0.3-1 | GTK side of the Mocha palette. |
 | `gtk-engine-murrine` | 0.98.2-5 | Required by most GTK2/3 themes; missing it silently breaks theming. |
-| `otf-rubik` | 2.2.0-2 | Proportional UI font for the bar, launcher and notifications. AUR-only; low download count, but it installs nothing except font files. |
 | `bibata-cursor-theme-bin` | 2.0.7-1 | Cursor theme that actually looks right at 1× and 2× scale. **The `-bin` variant deliberately** — the source package builds the cursors with `python-clickgen`, dragging in Pillow, numpy and BLAS/LAPACK (~20 packages that stay installed). `-bin` is the same release, prebuilt, zero dependencies. |
 
 ## 6. Applications

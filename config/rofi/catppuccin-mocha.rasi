@@ -21,7 +21,7 @@
 
   background-color: transparent;
   text-color:       @text;
-  font:             "Rubik 12";
+  font:             "Inter 12";
 }
 
 window {

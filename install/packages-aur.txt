@@ -6,11 +6,6 @@ catppuccin-gtk-theme-mocha
 # Required by most GTK2/3 themes. Missing it silently breaks theming.
 gtk-engine-murrine
 
-# Rubik — the proportional UI font for the bar, launcher and notifications.
-# AUR-only; otf-rubik carries the newer 2.2.0 release. Low download counts,
-# but it is a font package: the only thing it installs is .otf files.
-otf-rubik
-
 # Cursor theme that stays sharp at 1x and 2x scale.
 #
 # The -bin variant on purpose. Plain `bibata-cursor-theme` renders the cursors

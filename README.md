@@ -64,7 +64,7 @@ had kitty keybindings on Ubuntu worth keeping, paste them at the end of
 | Keybinds | hjkl **and** arrows | Same actions on both, so muscle memory can catch up. |
 | Terminal | kitty | Catppuccin palette and `background_opacity` for real blur behind text. |
 | Look | Catppuccin Mocha, gaps, rounding, blur | Modern dark, moderate animations. |
-| Fonts | Rubik for UI, JetBrains Mono in the terminal | Proportional text reads better in a bar; mono only where alignment matters. |
+| Fonts | Inter for UI, JetBrains Mono in the terminal | Proportional text reads better in a bar; mono only where alignment matters. |
 | Shell | fish + starship | One TOML prompt config that survives a change of shell. |
 | Qt theming | qt6ct + custom palette | No unpackaged Kvantum theme to fetch by hand. |
 

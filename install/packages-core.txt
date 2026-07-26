@@ -68,6 +68,7 @@ wev
 
 # Fonts and theming
 ttf-jetbrains-mono-nerd
+inter-font
 ttf-nerd-fonts-symbols
 noto-fonts
 noto-fonts-emoji

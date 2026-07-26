@@ -34,10 +34,10 @@
 @define-color red      #f38ba8;
 
 * {
-  /* Rubik for text, Nerd Font as the fallback that supplies every icon glyph.
+  /* Inter for text, Nerd Font as the fallback that supplies every icon glyph.
    * GTK walks the list per-character, so this gets proportional text and
    * monospace icons in the same label. */
-  font-family: "Rubik", "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+  font-family: "Inter", "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
   font-size: 13px;
   font-weight: 500;
   border: none;

@@ -13,7 +13,7 @@ GTK_THEME="catppuccin-mocha-mauve-standard+default"
 ICON_THEME="Papirus-Dark"
 CURSOR_THEME="Bibata-Modern-Classic"
 CURSOR_SIZE=24
-FONT="Rubik 11"
+FONT="Inter 11"
 MONO_FONT="JetBrainsMono Nerd Font 11"
 
 say() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
