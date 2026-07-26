@@ -1,17 +1,24 @@
-// Wallpaper picker theme — used by config/hypr/scripts/wallpaper.sh pick.
+// Wallpaper picker — used by config/hypr/scripts/wallpaper.sh pick.
 //
 // A grid of thumbnails rather than a list: you pick a wallpaper by looking at
 // it, not by reading filenames.
+//
+// Imports the launcher rather than the palette directly. That is deliberate:
+// the launcher declares the `* { }` block that sets every widget transparent
+// by default. Without it rofi falls back to its built-in defaults, which are
+// LIGHT — so any widget you don't explicitly style renders white on a dark
+// desktop. Importing here also keeps the two dialogs visually consistent.
+//
+// Never put a comment inside a { } block: rofi discards everything after it.
 
-@import "colors"
+@import "launcher"
 
 window {
-  transparency: "real";
-  location:     center;
-  anchor:       center;
-  width:        60%;
-  height:       55%;
-
+  transparency:     "real";
+  location:         center;
+  anchor:           center;
+  width:            60%;
+  height:           55%;
   background-color: @bg-a;
   border:           1px;
   border-color:     @surface1;
@@ -24,19 +31,6 @@ mainbox {
   spacing:  12px;
 }
 
-inputbar {
-  children:         [ prompt, entry ];
-  background-color: @bg-alt-a;
-  border-radius:    10px;
-  padding:          10px 14px;
-  spacing:          10px;
-}
-
-prompt {
-  text-color:     @accent;
-  vertical-align: 0.5;
-}
-
 entry {
   placeholder:       "Filtern…";
   placeholder-color: @overlay0;
@@ -45,20 +39,21 @@ entry {
 
 // The grid. 4 across is a good balance at 60% width on a 16" panel.
 listview {
-  layout:  vertical;
-  columns: 4;
-  lines:   3;
-
-  spacing:   10px;
-  scrollbar: false;
-  fixed-height: false;}
+  layout:       vertical;
+  columns:      4;
+  lines:        3;
+  spacing:      10px;
+  scrollbar:    false;
+  fixed-height: false;
+}
 
 element {
-  orientation:   vertical;
-  padding:       8px;
-  spacing:       6px;
-  border-radius: 10px;
-  cursor:        pointer;
+  orientation:      vertical;
+  padding:          8px;
+  spacing:          6px;
+  border-radius:    10px;
+  cursor:           pointer;
+  background-color: transparent;
 }
 
 // The thumbnail: rofi renders the image passed via the dmenu icon protocol.

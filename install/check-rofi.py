@@ -40,6 +40,41 @@ def main() -> int:
                 failed = True
                 break
 
+    # Every entry-point theme must end up with a `* { }` block that sets a
+    # background-color, directly or through its imports. Without one, rofi
+    # falls back to its built-in LIGHT defaults for any widget the theme
+    # doesn't explicitly style — a white dialog on a dark desktop.
+    def imports_of(path: Path) -> list[Path]:
+        found = []
+        for name in re.findall(r'@import\s+"([^"]+)"', path.read_text(encoding="utf-8")):
+            candidate = ROFI / (name if name.endswith(".rasi") else name + ".rasi")
+            if candidate.exists():
+                found.append(candidate)
+        return found
+
+    def has_star_default(path: Path, seen: set[Path] | None = None) -> bool:
+        seen = seen or set()
+        if path in seen:
+            return False
+        seen.add(path)
+        text = path.read_text(encoding="utf-8")
+        for block in re.finditer(r"\*\s*\{([^{}]*)\}", text):
+            if "background-color" in block.group(1):
+                return True
+        return any(has_star_default(dep, seen) for dep in imports_of(path))
+
+    # colors.rasi is the generated palette; config.rasi is rofi's settings file
+    # (a `configuration { }` block plus @theme). Neither is a theme itself.
+    NOT_THEMES = {"colors.rasi", "config.rasi"}
+
+    for path in themes:
+        if path.name in NOT_THEMES:
+            continue
+        if not has_star_default(path):
+            print(f"  {RED}FAIL{RESET}  {path.name}: no `* {{ background-color: ... }}` "
+                  "in it or its imports — rofi will use its light defaults")
+            failed = True
+
     palette = ROFI / "colors.rasi"
     if not palette.exists():
         print(f"  {RED}FAIL{RESET}  colors.rasi missing — run install/set-theme.py")
