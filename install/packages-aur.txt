@@ -1,0 +1,10 @@
+# AUR packages — installed with paru (preinstalled on CachyOS).
+
+# GTK side of the Catppuccin Mocha palette.
+catppuccin-gtk-theme-mocha
+
+# Required by most GTK2/3 themes. Missing it silently breaks theming.
+gtk-engine-murrine
+
+# Cursor theme that stays sharp at 1x and 2x scale.
+bibata-cursor-theme

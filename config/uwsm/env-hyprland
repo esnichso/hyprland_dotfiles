@@ -1,0 +1,18 @@
+# ~/.config/uwsm/env-hyprland
+#
+# Environment applied only to the Hyprland session, on top of ~/.config/uwsm/env.
+# This is where HYPR* and AQ_* (Aquamarine, the rendering backend) variables go.
+#
+# Empty by default — nothing here is needed on Intel graphics. Kept as a file so
+# there's an obvious place to put things when debugging.
+
+# Verbose compositor logging. Turn on when something is going wrong, off again
+# afterwards: it writes a lot and costs performance.
+# export HYPRLAND_TRACE=1
+
+# Verbose logging from the rendering backend.
+# export AQ_TRACE=1
+
+# Pin which GPU to use, first is primary. Only relevant on multi-GPU machines;
+# this ThinkPad has the Intel iGPU alone.
+# export AQ_DRM_DEVICES=/dev/dri/card1:/dev/dri/card0

@@ -1,0 +1,8 @@
+# Optional — install if the hardware or the itch calls for it.
+
+# Intel thermal management. CachyOS recommends it for power saving on Intel.
+thermald
+
+# Fingerprint reader. Only if your E16 actually has one:
+#   lsusb | grep -iE 'goodix|synaptics|validity'
+fprintd

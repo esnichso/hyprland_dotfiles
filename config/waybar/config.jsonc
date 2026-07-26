@@ -1,0 +1,207 @@
+// ~/.config/waybar/config.jsonc
+//
+// Status bar. Restart it after editing with SUPER+SHIFT+B — Waybar's own
+// hot-reload is less reliable than Hyprland's.
+//
+// Debug a module that shows nothing by running `waybar -l debug` in a terminal.
+{
+  "layer": "top",
+  "position": "top",
+
+  // Logical pixels, so this is at scale 1.6. Height is left to the content;
+  // padding in style.css controls how tall it actually sits.
+  "height": 38,
+  "spacing": 0,
+
+  // Sit inside the gaps rather than flush to the screen edge, matching
+  // gaps_out = 12 in the Hyprland config.
+  "margin-top": 8,
+  "margin-left": 12,
+  "margin-right": 12,
+
+  "modules-left": [
+    "hyprland/workspaces",
+    "hyprland/submap",
+    "hyprland/window"
+  ],
+
+  "modules-center": [
+    "clock"
+  ],
+
+  "modules-right": [
+    "tray",
+    "custom/notification",
+    "power-profiles-daemon",
+    "bluetooth",
+    "network",
+    "backlight",
+    "pulseaudio",
+    "battery",
+    "custom/power"
+  ],
+
+  // ---------------------------------------------------------------- left
+
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "format-icons": {
+      "default": "",
+      "active": "",
+      "urgent": ""
+    },
+    // Scroll over the workspace list to move between them.
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "sort-by-number": true
+  },
+
+  // Shows "resize" when you're in the resize submap (SUPER+ALT+R), so you can
+  // never be stuck in a mode without knowing it.
+  "hyprland/submap": {
+    "format": "  {}",
+    "tooltip": false
+  },
+
+  "hyprland/window": {
+    "format": "{title}",
+    "max-length": 60,
+    "separate-outputs": true,
+    "rewrite": {
+      "(.*) — Mozilla Firefox": "🌐 $1",
+      "(.*) - Visual Studio Code": "󰨞 $1",
+      "^$": "Desktop"
+    }
+  },
+
+  // -------------------------------------------------------------- center
+
+  "clock": {
+    "format": "{:%H:%M}",
+    // Click to swap in the full date.
+    "format-alt": "{:%a, %d. %B %Y}",
+    "tooltip-format": "<tt><small>{calendar}</small></tt>",
+    "calendar": {
+      "mode": "month",
+      "weeks-pos": "right",
+      "format": {
+        "months": "<span color='#cba6f7'><b>{}</b></span>",
+        "days": "<span color='#cdd6f4'>{}</span>",
+        "weeks": "<span color='#94e2d5'>W{}</span>",
+        "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+        "today": "<span color='#f38ba8'><b><u>{}</u></b></span>"
+      }
+    },
+    "actions": {
+      "on-click-right": "mode",
+      "on-scroll-up": "shift_up",
+      "on-scroll-down": "shift_down"
+    }
+  },
+
+  // --------------------------------------------------------------- right
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 10
+  },
+
+  // swaync's own status: shows a dot when notifications are waiting.
+  "custom/notification": {
+    "tooltip": false,
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "none": "",
+      "dnd-notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "dnd-none": "",
+      "inhibited-notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "<span foreground='#f38ba8'><sup></sup></span>",
+      "dnd-inhibited-none": ""
+    },
+    "return-type": "json",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "escape": true
+  },
+
+  "power-profiles-daemon": {
+    "format": "{icon}",
+    "tooltip-format": "Profil: {profile}\nTreiber: {driver}",
+    "tooltip": true,
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": ""
+    }
+  },
+
+  "bluetooth": {
+    "format": "",
+    "format-disabled": "",
+    "format-connected": " {num_connections}",
+    "tooltip-format": "{controller_alias}\t{controller_address}",
+    "tooltip-format-connected": "{device_enumerate}",
+    "on-click": "blueman-manager"
+  },
+
+  "network": {
+    "format-wifi": "  {signalStrength}%",
+    "format-ethernet": "󰈀",
+    "format-linked": "󰈀",
+    "format-disconnected": "󰤭",
+    "tooltip-format-wifi": "{essid}\n{ipaddr}\n↓ {bandwidthDownBits}  ↑ {bandwidthUpBits}",
+    "tooltip-format-ethernet": "{ifname}\n{ipaddr}",
+    "tooltip-format-disconnected": "Nicht verbunden",
+    // No GUI network manager in the package list; nmtui in a terminal is
+    // lighter and works everywhere. Swap for nm-connection-editor if you
+    // prefer clicking.
+    "on-click": "kitty --class nmtui -e nmtui"
+  },
+
+  "backlight": {
+    "format": "{icon} {percent}%",
+    "format-icons": ["", "", "", "", "", "", "", "", ""],
+    "on-scroll-up": "brightnessctl -e4 -n2 set 5%+",
+    "on-scroll-down": "brightnessctl -e4 -n2 set 5%-",
+    "tooltip": false
+  },
+
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟",
+    "format-bluetooth": "{icon} {volume}%",
+    "format-icons": {
+      "headphone": "",
+      "headset": "",
+      "default": ["", "", ""]
+    },
+    "on-click": "pavucontrol",
+    "on-click-right": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-scroll-up": "wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+",
+    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+    "tooltip-format": "{desc}"
+  },
+
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-icons": ["", "", "", "", ""],
+    "tooltip-format": "{timeTo}\n{power} W",
+    "interval": 30
+  },
+
+  "custom/power": {
+    "format": "",
+    "tooltip": false,
+    "on-click": "hyprshutdown"
+  }
+}

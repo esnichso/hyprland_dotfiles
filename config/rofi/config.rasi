@@ -1,0 +1,31 @@
+// ~/.config/rofi/config.rasi
+//
+// Launcher. Note: `rofi-wayland` no longer exists as a separate package —
+// upstream rofi has been Wayland-native since 2025 and CachyOS ships rofi 2.0.
+//
+// If rofi ever rejects this file after an update, `rofi -dump-config` prints
+// the current defaults in the format it expects.
+
+configuration {
+  modes: "drun,run,window";
+
+  // Icons make a visual grid far faster to scan than a list of names.
+  show-icons: true;
+  icon-theme: "Papirus-Dark";
+
+  // Ranking by how often you actually launch things beats alphabetical.
+  drun-display-format: "{name}";
+  disable-history: false;
+  sorting-method: "fzf";
+
+  // Terminal used when launching a terminal-only .desktop entry.
+  terminal: "kitty";
+
+  display-drun: " Apps";
+  display-run: " Run";
+  display-window: " Fenster";
+
+  kb-cancel: "Escape,super+r";
+}
+
+@theme "catppuccin-mocha"

@@ -1,0 +1,58 @@
+# ~/.config/uwsm/env
+#
+# Environment for the whole graphical session.
+#
+# These go here rather than in hyprland.lua on purpose: under uwsm, variables
+# set in the Hyprland config land too late for some services (portals,
+# systemd user units) to see them. uwsm exports these before the compositor
+# starts, so everything gets a consistent environment.
+#
+# Format is plain shell: export KEY=VALUE
+
+# --- Cursor ------------------------------------------------------------
+# Must be set here, not in the Hyprland config: XWayland apps and GTK read it
+# at startup. Size 24 is right for scale 1.6 on this panel.
+export XCURSOR_THEME=Bibata-Modern-Classic
+export XCURSOR_SIZE=24
+export HYPRCURSOR_THEME=Bibata-Modern-Classic
+export HYPRCURSOR_SIZE=24
+
+# --- Toolkits ----------------------------------------------------------
+# Prefer Wayland, fall back to X11 rather than failing outright.
+export GDK_BACKEND=wayland,x11,*
+export QT_QPA_PLATFORM="wayland;xcb"
+export SDL_VIDEODRIVER=wayland
+export CLUTTER_BACKEND=wayland
+
+# Qt apps draw their own title bars otherwise, which looks wrong next to
+# everything else and wastes vertical space.
+export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+
+# Qt theming comes from qt6ct (see PACKAGES.md — chosen over hyprqt6engine
+# because it's the established option and lives in the official repos).
+export QT_QPA_PLATFORMTHEME=qt6ct
+
+# Let Qt scale itself from the monitor's reported DPI.
+export QT_AUTO_SCREEN_SCALE_FACTOR=1
+
+# --- Applications ------------------------------------------------------
+# Firefox on Wayland natively.
+export MOZ_ENABLE_WAYLAND=1
+
+# Electron apps (VS Code, Discord, Obsidian) default to XWayland, where they
+# look blurry on a scaled display. This tells them to use Wayland.
+export ELECTRON_OZONE_PLATFORM_HINT=auto
+
+# --- Hardware video acceleration ---------------------------------------
+# Intel Arrow Lake iGPU via intel-media-driver. Verify with `vainfo`.
+export LIBVA_DRIVER_NAME=iHD
+
+# --- Misc --------------------------------------------------------------
+# So `sudo -e`, git and anything else that asks opens your editor of choice.
+# Change once you've settled on one.
+export EDITOR=nano
+export VISUAL=nano
+
+# Note: XDG_CURRENT_DESKTOP, XDG_SESSION_TYPE and XDG_SESSION_DESKTOP are set
+# by uwsm automatically. Don't set them here — getting them wrong is the usual
+# cause of "the portal does nothing and logs nothing".

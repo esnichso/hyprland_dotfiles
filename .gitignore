@@ -1,0 +1,6 @@
+# Local scratch, never part of the config
+*.log
+*.tar.gz
+
+# Editor / LSP noise
+.luarc.json.bak
