@@ -133,19 +133,37 @@ hyprctl dispatch 'hl.dsp.submap("reset")'
 
 ## Wallpapers
 
-Drop images into `~/Pictures/wallpapers/`. hyprpaper picks one at random when
-the session starts and then leaves it alone — it never changes while you're
-working.
+Drop images into `~/Pictures/wallpapers/`. `SUPER+W` opens a grid of
+thumbnails; pick one and it is applied immediately and remembered across
+reboots. Nothing ever changes on its own.
 
 | Keys | Action |
 | --- | --- |
-| `SUPER` + `W` | Jump to a random wallpaper now |
+| `SUPER` + `W` | Pick a wallpaper — rofi grid of thumbnails |
+| `SUPER` + `SHIFT` + `W` | Jump to a random one |
+| `SUPER` + `ALT` + `T` | Change the colour theme |
 
-Set one directly, without restarting anything:
+From the shell:
 
 ```bash
-hyprctl hyprpaper wallpaper ",~/Pictures/wallpapers/foo.jpg,cover"
+~/.config/hypr/scripts/wallpaper.sh pick        # rofi grid
+~/.config/hypr/scripts/wallpaper.sh random
+~/.config/hypr/scripts/wallpaper.sh set ~/pic.jpg
+~/.config/hypr/scripts/wallpaper.sh current
 ```
 
-To pin one image permanently, point `path` at a file rather than a directory
-in `config/hypr/hyprpaper.conf`.
+The choice lives in `~/.local/state/hypr/wallpaper`, not in the repo, so
+changing wallpaper never leaves you with a dirty git tree.
+
+## Colours
+
+`SUPER+ALT+T` picks a theme and reloads everything live. From the shell:
+
+```bash
+./install/set-theme.py            # list
+./install/set-theme.py latte      # apply
+```
+
+One palette file per theme in `themes/`. Editing `accent` there restyles the
+active workspace, window borders, launcher selection, prompt and sliders
+together — see the Colours section of README.md.

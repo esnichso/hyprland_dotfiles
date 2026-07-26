@@ -49,8 +49,14 @@ bind("M", hl.dsp.exec_cmd(scripts .. "/powermenu.sh"), { description = "Power me
 -- already remapped to Escape (see input.lua), so this is a comfortable reach.
 bind("Escape", hl.dsp.exec_cmd("loginctl lock-session"), { description = "Lock screen" })
 
--- Random wallpaper, right now. hyprpaper also rotates on its own every 15 min.
-bind("W", hl.dsp.exec_cmd(scripts .. "/wallpaper.sh"), { description = "Random wallpaper" })
+-- Wallpaper: a rofi grid of thumbnails, so you choose by looking at them.
+-- The choice persists across reboots.
+bind("W",         hl.dsp.exec_cmd(scripts .. "/wallpaper.sh pick"),   { description = "Pick wallpaper" })
+bind("SHIFT + W", hl.dsp.exec_cmd(scripts .. "/wallpaper.sh random"), { description = "Random wallpaper" })
+
+-- Colour scheme picker: rofi list of themes/*.toml, applied and reloaded live.
+bind("ALT + T", hl.dsp.exec_cmd(scripts .. "/theme-picker.sh"),
+  { description = "Change colour theme" })
 
 --------------------------------------------------------------------------
 -- Window management

@@ -71,7 +71,10 @@ for path in ["config/waybar/style.css", "config/swaync/style.css"]:
     provider.connect("parsing-error",
                      lambda p, section, error: errors.append(error.message))
     try:
-        provider.load_from_data(open(path, "rb").read())
+        # load_from_path, not load_from_data: @import is resolved relative to
+        # the file, which is how waybar and swaync load these. Passing raw
+        # bytes would resolve imports against the working directory instead.
+        provider.load_from_path(path)
     except GLib.Error as e:
         errors.append(str(e))
     if errors:
@@ -100,6 +103,17 @@ while IFS= read -r f; do
 		bash -n "$f" 2>&1 | sed 's/^/        /'
 	fi
 done < <(find config install -name '*.sh' | sort)
+
+say "Generated colours in sync with the theme"
+THEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/theme"
+CURRENT_THEME="mocha"
+[[ -f $THEME_STATE ]] && CURRENT_THEME="$(<"$THEME_STATE")"
+if ./install/set-theme.py "$CURRENT_THEME" --check >/dev/null 2>&1; then
+	ok "generated files match themes/$CURRENT_THEME.toml"
+else
+	bad "generated colour files are stale"
+	./install/set-theme.py "$CURRENT_THEME" --check 2>&1 | sed 's/^/        /'
+fi
 
 say "Duplicate keybinds"
 python3 - <<'PY'

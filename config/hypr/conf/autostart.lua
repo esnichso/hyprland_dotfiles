@@ -34,10 +34,14 @@ hl.on("hyprland.start", function()
   -- Idle management: dim, lock, sleep. See hypridle.conf.
   hl.exec_cmd("hypridle")
 
-  -- Wallpaper — only if you've actually put one there, since hyprpaper exits
-  -- with an error on a missing file. Until then you get the flat background
-  -- colour set in looks.lua, which looks deliberate rather than broken.
-  hl.exec_cmd('[ -n "$(ls -A ~/Pictures/wallpapers 2>/dev/null)" ] && hyprpaper')
+  -- Wallpaper daemon. Safe to start unconditionally now that hyprpaper.conf
+  -- declares no wallpaper of its own — with nothing to load it cannot fail on
+  -- a missing file.
+  hl.exec_cmd("hyprpaper")
+
+  -- Re-apply whichever wallpaper you last chose. Waits for hyprpaper to accept
+  -- IPC, and exits quietly if you have not picked one yet.
+  hl.exec_cmd(os.getenv("HOME") .. "/.config/hypr/scripts/wallpaper.sh restore")
 
   -- Clipboard history. Two pieces: cliphist records, wl-clip-persist keeps
   -- clipboard contents alive after the app you copied from closes (Wayland

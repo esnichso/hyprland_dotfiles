@@ -16,22 +16,9 @@
  * no flexbox.
  */
 
-@define-color base     #1e1e2e;
-@define-color mantle   #181825;
-@define-color crust    #11111b;
-@define-color surface0 #313244;
-@define-color surface1 #45475a;
-@define-color surface2 #585b70;
-@define-color overlay0 #6c7086;
-@define-color overlay1 #7f849c;
-@define-color subtext0 #a6adc8;
-@define-color subtext1 #bac2de;
-@define-color text     #cdd6f4;
-@define-color lavender #b4befe;
-@define-color mauve    #cba6f7;
-@define-color yellow   #f9e2af;
-@define-color peach    #fab387;
-@define-color red      #f38ba8;
+/* Palette. Generated from themes/<name>.toml by install/set-theme.py —
+ * change the theme there, not here. */
+@import url("colors.css");
 
 * {
   /* Inter for text, Nerd Font as the fallback that supplies every icon glyph.
@@ -147,7 +134,7 @@ window#waybar {
  * one piece of persistent colour in the bar. */
 #workspaces button.active {
   color: @crust;
-  background: @mauve;
+  background: @accent;
   font-weight: 700;
 }
 
@@ -159,14 +146,14 @@ window#waybar {
 
 #workspaces button.urgent {
   color: @crust;
-  background: @red;
+  background: @urgent;
   font-weight: 700;
 }
 
 #submap {
-  background: @peach;
+  background: @warning;
   color: @crust;
-  border: 1px solid @peach;
+  border: 1px solid @warning;
   border-radius: 12px;
   padding: 3px 12px;
   margin-left: 6px;
@@ -211,18 +198,18 @@ window#waybar {
 
 /* Genuinely wrong: no network at all. */
 #network.disconnected {
-  color: @red;
+  color: @urgent;
 }
 
 /* Battery. Amber under 30%, red under 15%, and only while discharging —
  * a low battery on the charger is not a problem worth colouring. */
 #battery.warning:not(.charging):not(.plugged) {
-  color: @peach;
+  color: @warning;
 }
 
 #battery.critical:not(.charging):not(.plugged) {
   color: @crust;
-  background: @red;
+  background: @urgent;
   font-weight: 700;
 }
 
@@ -231,7 +218,7 @@ window#waybar {
 }
 
 #custom-power:hover {
-  color: @red;
+  color: @urgent;
 }
 
 /* ------------------------------------------------------------ tooltip */

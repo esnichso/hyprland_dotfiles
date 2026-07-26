@@ -28,4 +28,4 @@ configuration {
   kb-cancel: "Escape,super+r";
 }
 
-@theme "catppuccin-mocha"
+@theme "launcher"

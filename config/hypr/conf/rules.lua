@@ -172,7 +172,7 @@ hl.window_rule({
   match        = { float = true },
   border_size  = 2,
   rounding     = 12,
-  border_color = { colors = { c.lavender, c.mauve }, angle = 45 },
+  border_color = { colors = { c.accent_alt, c.accent }, angle = 45 },
 })
 
 --------------------------------------------------------------------------

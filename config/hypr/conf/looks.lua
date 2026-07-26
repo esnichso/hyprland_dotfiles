@@ -17,7 +17,7 @@ hl.config({
     col = {
       -- A gradient reads as a subtle highlight on the focused window rather
       -- than a hard outline. 45 degrees runs bottom-left to top-right.
-      active_border   = { colors = { c.mauve_a, c.blue_a }, angle = 45 },
+      active_border   = { colors = { c.accent_a, c.accent2_a }, angle = 45 },
       inactive_border = c.surface_a,
     },
 
@@ -149,7 +149,7 @@ hl.config({
     disable_hyprland_logo   = true,
     disable_splash_rendering = true,
     force_default_wallpaper  = 0,
-    background_color         = "rgb(11111b)",
+    background_color         = c.crust,
 
     font_family = "JetBrainsMono Nerd Font",
 

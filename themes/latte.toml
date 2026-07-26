@@ -1,0 +1,66 @@
+# Catppuccin Latte — the light counterpart to Mocha.
+#
+# Included mainly to prove the theme system is real: same slot names, entirely
+# different values, one command to switch. Untested visually — if something
+# reads badly in daylight, adjust the values here rather than any config.
+
+name = "Catppuccin Latte"
+dark = false
+
+gtk_theme = "catppuccin-latte-mauve-standard+default"
+icon_theme = "Papirus-Light"
+
+[palette]
+crust    = "#dce0e8"
+mantle   = "#e6e9ef"
+base     = "#eff1f5"
+surface0 = "#ccd0da"
+surface1 = "#bcc0cc"
+surface2 = "#acb0be"
+overlay0 = "#9ca0b0"
+overlay1 = "#8c8fa1"
+overlay2 = "#7c7f93"
+subtext0 = "#6c6f85"
+subtext1 = "#5c5f77"
+text     = "#4c4f69"
+rosewater = "#dc8a78"
+flamingo  = "#dd7878"
+pink      = "#ea76cb"
+mauve     = "#8839ef"
+red       = "#d20f39"
+maroon    = "#e64553"
+peach     = "#fe640b"
+yellow    = "#df8e1d"
+green     = "#40a02b"
+teal      = "#179299"
+sky       = "#04a5e5"
+sapphire  = "#209fb5"
+blue      = "#1e66f5"
+lavender  = "#7287fd"
+
+[roles]
+accent     = "mauve"
+accent_alt = "blue"
+urgent     = "red"
+warning    = "peach"
+success    = "green"
+info       = "yellow"
+link       = "blue"
+
+[ansi]
+black          = "surface1"
+red            = "red"
+green          = "green"
+yellow         = "yellow"
+blue           = "blue"
+magenta        = "pink"
+cyan           = "teal"
+white          = "subtext1"
+bright_black   = "surface2"
+bright_red     = "red"
+bright_green   = "green"
+bright_yellow  = "yellow"
+bright_blue    = "blue"
+bright_magenta = "pink"
+bright_cyan    = "teal"
+bright_white   = "subtext0"

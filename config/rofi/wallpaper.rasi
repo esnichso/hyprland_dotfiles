@@ -1,0 +1,86 @@
+// Wallpaper picker theme — used by config/hypr/scripts/wallpaper.sh pick.
+//
+// A grid of thumbnails rather than a list: you pick a wallpaper by looking at
+// it, not by reading filenames.
+
+@import "colors"
+
+window {
+  transparency: "real";
+  location:     center;
+  anchor:       center;
+  width:        60%;
+  height:       55%;
+
+  background-color: @bg-alt;
+  border:           1px;
+  border-color:     @surface1;
+  border-radius:    14px;
+}
+
+mainbox {
+  children: [ inputbar, listview ];
+  padding:  14px;
+  spacing:  12px;
+}
+
+inputbar {
+  children:         [ prompt, entry ];
+  background-color: @bg-dim;
+  border-radius:    10px;
+  padding:          10px 14px;
+  spacing:          10px;
+}
+
+prompt {
+  text-color:     @accent;
+  vertical-align: 0.5;
+}
+
+entry {
+  placeholder:       "Filtern…";
+  placeholder-color: @overlay0;
+  vertical-align:    0.5;
+}
+
+listview {
+  // The grid. 4 across is a good balance at 60% width on a 16" panel.
+  layout:  vertical;
+  columns: 4;
+  lines:   3;
+
+  spacing:   10px;
+  scrollbar: false;
+  fixed-height: false;
+}
+
+element {
+  orientation:   vertical;
+  padding:       8px;
+  spacing:       6px;
+  border-radius: 10px;
+  cursor:        pointer;
+}
+
+// The thumbnail. rofi renders the image passed via the dmenu icon protocol.
+element-icon {
+  size:             160px;
+  horizontal-align: 0.5;
+}
+
+element-text {
+  horizontal-align: 0.5;
+  vertical-align:   0.5;
+  text-color:       inherit;
+}
+
+element normal.normal {
+  text-color: @subtext0;
+}
+
+element selected.normal {
+  background-color: @surface1;
+  text-color:       @fg;
+  border:           2px;
+  border-color:     @accent;
+}

@@ -13,7 +13,8 @@ maintained rather than copied.
 | [KEYBINDS.md](KEYBINDS.md) | Every keybinding and gesture, in one page. |
 | [PLAN.md](PLAN.md) | Round-2 fix list from the VM run, and what each change was for. |
 | `config/` | The actual configuration, symlinked into `~/.config`. |
-| `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`. |
+| `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`, `set-theme.py`. |
+| `themes/` | One TOML palette per theme — the single source of colour. |
 | `docs/hyprland/` | Snapshot of the official wiki (38 pages + upstream example config, 2026-07-26). |
 
 ```
@@ -50,6 +51,34 @@ had kitty keybindings on Ubuntu worth keeping, paste them at the end of
 `config/kitty/kitty.conf`; `link.sh` backs up whatever was there first.
 
 `~/.config/btop` is still deliberately left alone.
+
+## Colours
+
+One palette file per theme in `themes/`; `install/set-theme.py` renders every
+config from it.
+
+```bash
+./install/set-theme.py            # list themes
+./install/set-theme.py mocha      # apply one
+./install/set-theme.py --pick     # choose with rofi  (SUPER+ALT+T)
+```
+
+Colour used to be duplicated across 13 files as 341 hex literals. Now it is
+generated two ways, depending on what each format supports:
+
+| Mechanism | Used for |
+| --- | --- |
+| A generated file the real config imports | waybar/swaync CSS (`@import`), kitty (`include`), rofi (`@import`), fish (`source`), hyprlock (`source`) |
+| A marked region replaced in place | `starship.toml`, `waybar/config.jsonc`, `gtk-3.0/settings.ini` — no import mechanism exists |
+
+Generated files say so in their header. Edit `themes/*.toml`, never them —
+`check.sh` fails if they drift out of sync.
+
+`[roles]` is the part worth knowing about: `accent`, `urgent`, `warning`,
+`success` map semantic meaning onto palette entries, and the configs reference
+the roles. Changing `accent = "mauve"` to `accent = "teal"` restyles the active
+workspace, window borders, launcher selection, prompt arrow and sliders in one
+edit.
 
 ## Before committing
 

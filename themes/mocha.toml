@@ -1,0 +1,86 @@
+# Catppuccin Mocha — the default.
+#
+# This is the single source of truth for colour. `install/set-theme.py mocha`
+# renders every config file from it.
+#
+# To make a new theme, copy this file and change the values. Every key must be
+# present: the slot *names* are Catppuccin's, but there is nothing
+# Catppuccin-specific about them — they are just "three background shades,
+# three surface shades, three muted foregrounds, three text shades, fourteen
+# accents", which is how nearly every modern palette is organised. A Gruvbox or
+# Nord theme fills the same slots with its own values.
+
+name = "Catppuccin Mocha"
+dark = true
+
+# GTK theme directory name, applied by scripts/theme.sh.
+# Check what you actually have: ls /usr/share/themes ~/.themes
+gtk_theme = "catppuccin-mocha-mauve-standard+default"
+icon_theme = "Papirus-Dark"
+
+[palette]
+# Backgrounds, darkest first.
+crust    = "#11111b"
+mantle   = "#181825"
+base     = "#1e1e2e"
+
+# Raised surfaces: cards, buttons, selections.
+surface0 = "#313244"
+surface1 = "#45475a"
+surface2 = "#585b70"
+
+# Muted foregrounds: disabled text, borders, placeholders.
+overlay0 = "#6c7086"
+overlay1 = "#7f849c"
+overlay2 = "#9399b2"
+
+# Text, dimmest to brightest.
+subtext0 = "#a6adc8"
+subtext1 = "#bac2de"
+text     = "#cdd6f4"
+
+# Accents.
+rosewater = "#f5e0dc"
+flamingo  = "#f2cdcd"
+pink      = "#f5c2e7"
+mauve     = "#cba6f7"
+red       = "#f38ba8"
+maroon    = "#eba0ac"
+peach     = "#fab387"
+yellow    = "#f9e2af"
+green     = "#a6e3a1"
+teal      = "#94e2d5"
+sky       = "#89dceb"
+sapphire  = "#74c7ec"
+blue      = "#89b4fa"
+lavender  = "#b4befe"
+
+[roles]
+# Which accent means what. Changing `accent` alone reskins the whole desktop:
+# active workspace, window border, launcher selection, prompt arrow, sliders.
+accent     = "mauve"
+accent_alt = "blue"
+urgent     = "red"
+warning    = "peach"
+success    = "green"
+info       = "yellow"
+link       = "blue"
+
+[ansi]
+# The 16 terminal colours, as palette keys. Used by kitty and fish.
+black          = "surface1"
+red            = "red"
+green          = "green"
+yellow         = "yellow"
+blue           = "blue"
+magenta        = "pink"
+cyan           = "teal"
+white          = "subtext1"
+bright_black   = "surface2"
+bright_red     = "red"
+bright_green   = "green"
+bright_yellow  = "yellow"
+bright_blue    = "blue"
+bright_magenta = "pink"
+bright_cyan    = "teal"
+bright_white   = "subtext0"

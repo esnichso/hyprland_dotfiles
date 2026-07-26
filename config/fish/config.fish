@@ -38,25 +38,6 @@ if status is-interactive
     abbr -a hm   hyprctl monitors
 
     # --- Colours -------------------------------------------------------
-    # Catppuccin Mocha for fish's own syntax highlighting, matching kitty.
-    set -g fish_color_normal        cdd6f4
-    set -g fish_color_command       89b4fa
-    set -g fish_color_keyword       f38ba8
-    set -g fish_color_quote         a6e3a1
-    set -g fish_color_redirection   f5c2e7
-    set -g fish_color_end           fab387
-    set -g fish_color_error         f38ba8
-    set -g fish_color_param         cdd6f4
-    set -g fish_color_comment       6c7086
-    set -g fish_color_selection     --background=45475a
-    set -g fish_color_search_match  --background=45475a
-    set -g fish_color_operator      f5c2e7
-    set -g fish_color_escape        eba0ac
-    set -g fish_color_autosuggestion 6c7086
-
-    set -g fish_pager_color_progress      6c7086
-    set -g fish_pager_color_prefix        f5c2e7
-    set -g fish_pager_color_completion    cdd6f4
-    set -g fish_pager_color_description   6c7086
-    set -g fish_pager_color_selected_background --background=45475a
+    # Generated from themes/<name>.toml by install/set-theme.py.
+    source $__fish_config_dir/colors.fish
 end

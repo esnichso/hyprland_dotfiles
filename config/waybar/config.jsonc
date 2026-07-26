@@ -78,13 +78,15 @@
     "calendar": {
       "mode": "month",
       "weeks-pos": "right",
+      // >>> palette >>>
       "format": {
-        "months": "<span color='#cba6f7'><b>{}</b></span>",
-        "days": "<span color='#cdd6f4'>{}</span>",
-        "weeks": "<span color='#6c7086'>W{}</span>",
+        "months":   "<span color='#cba6f7'><b>{}</b></span>",
+        "days":     "<span color='#cdd6f4'>{}</span>",
+        "weeks":    "<span color='#6c7086'>W{}</span>",
         "weekdays": "<span color='#7f849c'><b>{}</b></span>",
-        "today": "<span color='#cba6f7'><b><u>{}</u></b></span>"
+        "today":    "<span color='#cba6f7'><b><u>{}</u></b></span>"
       }
+// <<< palette <<<
     },
     "actions": {
       "on-click-right": "mode",
