@@ -85,6 +85,5 @@ at **2560×1600**, scaled 1.6 · German keyboard layout · 30 GB RAM.
 - [x] Research, docs cached, hardware profiled
 - [x] Package list and setup guide
 - [x] Config written — Lua files parse clean, JSON validated
-- [ ] Reviewed by you
-- [ ] Validated in a VM
+- [x] Validated in a VM (CachyOS guest, 2026-07-27)
 - [ ] Installed on the ThinkPad
