@@ -47,11 +47,15 @@ fi
 
 say "Checking which repositories CachyOS selected"
 # Arrow Lake supports x86-64-v3 but not v4 (no AVX-512). v4 repos would be wrong.
-if grep -q 'cachyos-.*-v4' /etc/pacman.conf 2>/dev/null; then
+#
+# Match only *active* section headers: pacman.conf ships commented-out v4 entries
+# for reference, and a looser pattern flags those as if they were enabled.
+if grep -qE '^[[:space:]]*\[cachyos[a-z0-9-]*-v4\]' /etc/pacman.conf 2>/dev/null; then
 	echo "   WARNING: v4 repositories are enabled, but this CPU has no AVX-512."
 	echo "   Run 'sudo cachyos-rate-mirrors' and pick v3 before continuing."
 fi
-grep -oE '^\[cachyos[a-z0-9-]*\]' /etc/pacman.conf 2>/dev/null | sed 's/^/   /' || true
+echo "   Active CachyOS repositories:"
+grep -oE '^[[:space:]]*\[cachyos[a-z0-9-]*\]' /etc/pacman.conf 2>/dev/null | tr -d ' \t' | sed 's/^/     /' || true
 
 say "Updating the system first (never install onto a partial upgrade)"
 run sudo pacman -Syu
@@ -67,12 +71,21 @@ if ((WITH_OPTIONAL)); then
 fi
 
 say "Installing AUR packages"
-if command -v paru >/dev/null 2>&1; then
+# paru lives in CachyOS's own repository, so pacman can install it. Without an
+# AUR helper the GTK theme, cursor theme and murrine engine are all missing,
+# which leaves GTK apps looking untidy next to everything else.
+if ! command -v paru >/dev/null 2>&1; then
+	echo "   paru not installed — installing it from the CachyOS repo first."
+	run sudo pacman -S --needed paru
+fi
+
+if ((DRY_RUN)) || command -v paru >/dev/null 2>&1; then
 	mapfile -t aur < <(pkglist "$HERE/packages-aur.txt")
 	run paru -S --needed "${aur[@]}"
 else
-	echo "   paru not found — skipping AUR packages."
-	echo "   CachyOS normally ships it; install with: sudo pacman -S paru"
+	echo "   Still no paru — skipping AUR packages."
+	echo "   Install one by hand, then re-run this script to pick them up:"
+	echo "     sudo pacman -S paru      # or: yay, from the AUR"
 fi
 
 say "Enabling system services"
