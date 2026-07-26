@@ -11,7 +11,8 @@ maintained rather than copied.
 | [PACKAGES.md](PACKAGES.md) | What gets installed and why. Names and versions verified against live Arch/AUR APIs. |
 | [SETUP.md](SETUP.md) | Step-by-step: build here → validate in a VM → install on metal → first-login checklist. |
 | [KEYBINDS.md](KEYBINDS.md) | Every keybinding and gesture, in one page. |
-| [PLAN.md](PLAN.md) | Round-2 fix list from the VM run, and what each change was for. |
+| [PLAN.md](PLAN.md) | Fix lists from the VM rounds, and what each change was for. |
+| [CLAUDE.md](CLAUDE.md) | How the repo works, the workflow, and the gotchas worth knowing before editing. |
 | `config/` | The actual configuration, symlinked into `~/.config`. |
 | `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`, `set-theme.py`. |
 | `themes/` | One TOML palette per theme — the single source of colour. |
