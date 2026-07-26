@@ -7,4 +7,9 @@ catppuccin-gtk-theme-mocha
 gtk-engine-murrine
 
 # Cursor theme that stays sharp at 1x and 2x scale.
-bibata-cursor-theme
+#
+# The -bin variant on purpose. Plain `bibata-cursor-theme` renders the cursors
+# from source at build time via python-clickgen, which pulls in Pillow, numpy
+# and BLAS/LAPACK — roughly 20 packages, permanently installed, for a cursor
+# theme. -bin is the same 2.0.7 release, prebuilt, with no dependencies at all.
+bibata-cursor-theme-bin

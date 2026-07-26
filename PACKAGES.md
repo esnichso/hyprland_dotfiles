@@ -130,7 +130,7 @@ no file pickers, no password prompts, freezing apps).
 | --- | --- | --- |
 | `catppuccin-gtk-theme-mocha` | 1.0.3-1 | GTK side of the Mocha palette. |
 | `gtk-engine-murrine` | 0.98.2-5 | Required by most GTK2/3 themes; missing it silently breaks theming. |
-| `bibata-cursor-theme` | 2.0.7-1 | Cursor theme that actually looks right at 1× and 2× scale. |
+| `bibata-cursor-theme-bin` | 2.0.7-1 | Cursor theme that actually looks right at 1× and 2× scale. **The `-bin` variant deliberately** — the source package builds the cursors with `python-clickgen`, dragging in Pillow, numpy and BLAS/LAPACK (~20 packages that stay installed). `-bin` is the same release, prebuilt, zero dependencies. |
 
 ## 6. Applications
 
