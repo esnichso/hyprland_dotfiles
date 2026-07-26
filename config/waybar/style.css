@@ -93,12 +93,24 @@ window#waybar {
   padding: 3px 8px;
 }
 
-/* Round only the two ends of the right-hand group. */
-#tray {
+/* Round only the two ends of the right-hand group.
+ *
+ * The notification bell is the left end rather than the tray, because the tray
+ * is empty until something puts an icon in it — and GTK CSS has no `:empty`
+ * pseudo-class to style that case with. (It is standard CSS, but GTK does not
+ * implement it, and a single unknown pseudo-class makes GTK reject the entire
+ * stylesheet.) The bell always renders, so the rounded end is always drawn. */
+#custom-notification {
   border-left-width: 1px;
   border-top-left-radius: 12px;
   border-bottom-left-radius: 12px;
   padding-left: 12px;
+}
+
+/* Tray sits inside the group. Minimal padding so an empty tray collapses to
+ * almost nothing instead of leaving a visible gap. */
+#tray {
+  padding: 3px 2px;
 }
 
 #custom-power {
@@ -106,12 +118,6 @@ window#waybar {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   padding-right: 12px;
-}
-
-/* Empty tray collapses, so let the notification bell round the end instead. */
-#tray:empty {
-  padding: 0;
-  border: none;
 }
 
 /* --------------------------------------------------------- workspaces */

@@ -13,7 +13,7 @@ maintained rather than copied.
 | [KEYBINDS.md](KEYBINDS.md) | Every keybinding and gesture, in one page. |
 | [PLAN.md](PLAN.md) | Round-2 fix list from the VM run, and what each change was for. |
 | `config/` | The actual configuration, symlinked into `~/.config`. |
-| `install/` | Package lists, `bootstrap.sh`, `link.sh`. |
+| `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`. |
 | `docs/hyprland/` | Snapshot of the official wiki (38 pages + upstream example config, 2026-07-26). |
 
 ```
@@ -50,6 +50,17 @@ had kitty keybindings on Ubuntu worth keeping, paste them at the end of
 `config/kitty/kitty.conf`; `link.sh` backs up whatever was there first.
 
 `~/.config/btop` is still deliberately left alone.
+
+## Before committing
+
+```bash
+./install/check.sh
+```
+
+Validates Lua, JSONC, GTK CSS, TOML and the shell scripts, and looks for
+duplicate keybinds. The CSS check uses GTK's own parser — worth having, because
+GTK rejects an entire stylesheet over one unknown pseudo-class and the only
+symptom is an unstyled bar.
 
 ## Decisions
 

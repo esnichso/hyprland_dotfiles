@@ -31,9 +31,12 @@
     "clock"
   ],
 
+  // Notification bell first, tray second: the tray is empty until an app puts
+  // an icon in it, and GTK CSS can't style an empty widget away, so the bell
+  // is the reliable left end of the group.
   "modules-right": [
-    "tray",
     "custom/notification",
+    "tray",
     "power-profiles-daemon",
     "bluetooth",
     "network",
