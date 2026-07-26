@@ -112,7 +112,7 @@ no file pickers, no password prompts, freezing apps).
 
 | Package | Repo | Version | Why |
 | --- | --- | --- | --- |
-| `ttf-jetbrains-mono-nerd` | extra | 3.4.0 | Terminal + bar font, with icon glyphs baked in. |
+| `ttf-jetbrains-mono-nerd` | extra | 3.4.0 | Terminal font, with the Nerd Font icon glyphs the bar falls back to. |
 | `ttf-nerd-fonts-symbols` | extra | 3.4.0 | Icon fallback for everything else. |
 | `noto-fonts` | extra | 2026.07.01 | Base sans-serif. Without one you get literal squares. |
 | `noto-fonts-emoji` | extra | 2.051 | Colour emoji. |
@@ -122,7 +122,6 @@ no file pickers, no password prompts, freezing apps).
 | `papirus-icon-theme` | extra | 20250501 | Icon theme with good Catppuccin folder variants. |
 | `qt6ct` | extra | 0.11 | Qt6 appearance control. |
 | `qt5ct` | extra | 1.9 | Qt5 appearance control. |
-| `kvantum` | extra | 1.1.8 | Qt widget theming engine. |
 
 **AUR** (CachyOS ships `paru`; `pacman` won't find these):
 
@@ -130,13 +129,16 @@ no file pickers, no password prompts, freezing apps).
 | --- | --- | --- |
 | `catppuccin-gtk-theme-mocha` | 1.0.3-1 | GTK side of the Mocha palette. |
 | `gtk-engine-murrine` | 0.98.2-5 | Required by most GTK2/3 themes; missing it silently breaks theming. |
+| `otf-rubik` | 2.2.0-2 | Proportional UI font for the bar, launcher and notifications. AUR-only; low download count, but it installs nothing except font files. |
 | `bibata-cursor-theme-bin` | 2.0.7-1 | Cursor theme that actually looks right at 1× and 2× scale. **The `-bin` variant deliberately** — the source package builds the cursors with `python-clickgen`, dragging in Pillow, numpy and BLAS/LAPACK (~20 packages that stay installed). `-bin` is the same release, prebuilt, zero dependencies. |
 
 ## 6. Applications
 
 | Package | Repo | Version | Why |
 | --- | --- | --- | --- |
-| `kitty` | extra | 0.48.1 | Terminal — your existing `~/.config/kitty` carries over unchanged. |
+| `fish` | extra | 4.8.1 | Shell. |
+| `starship` | extra | 1.26.0 | Prompt — one TOML file, works in any shell if you ever switch. |
+| `kitty` | extra | 0.48.1 | Terminal. |
 | `btop` | extra | 1.4.7 | System monitor — your existing config carries over too. |
 | `fastfetch` | extra | 2.66.0 | System info. |
 | `mpv` | extra | 0.41.0 | Video player. |
@@ -157,7 +159,8 @@ tell me what you want and I'll fold them in.
 | `tlp` | Conflicts with `power-profiles-daemon`. Worth revisiting if battery life disappoints. |
 | `nwg-displays` | GUI monitor config — but it writes the **old hyprlang** syntax, which 0.56 no longer reads. Would corrupt our setup. Single internal display makes it unnecessary anyway. |
 | `swappy` | Superseded by `satty`. |
-| `hyprqt6engine` | Would theme Qt6 apps via Hyprland's own toolkit, but it's at 0.1.0 and AUR-only. `qt6ct` + `kvantum` is the established path and lives in the official repos. |
+| `kvantum` | Would give richer Qt widget rendering, but the Catppuccin Kvantum theme isn't packaged for Arch — it must be fetched from GitHub by hand. `qt6ct`'s Fusion style with a custom palette (`config/qt6ct/colors/`) themes Qt apps completely with nothing downloaded. |
+| `hyprqt6engine` | Would theme Qt6 apps via Hyprland's own toolkit, but it's at 0.1.0 and AUR-only. `qt6ct` with a custom palette lives in the official repos and needs nothing downloaded. |
 | `yay` | CachyOS ships `paru`. One AUR helper is enough. |
 
 ## Rough footprint

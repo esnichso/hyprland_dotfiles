@@ -64,6 +64,16 @@ hl.window_rule({
   center = true,
 })
 
+-- Terminal UIs launched from the bar. Without this, nmtui opens tiled and
+-- takes over the whole screen, which is what made clicking the network module
+-- feel like a mistake. Waybar launches it with --class so it can be matched.
+hl.window_rule({
+  match  = { class = "^(tui-float)$" },
+  float  = true,
+  size   = { 900, 620 },
+  center = true,
+})
+
 hl.window_rule({
   match  = { class = "^(nwg-look|qt6ct|qt5ct|kvantummanager)$" },
   float  = true,
@@ -142,13 +152,12 @@ hl.window_rule({
 -- Appearance
 --------------------------------------------------------------------------
 
--- Terminals get a touch of transparency; they sit over the wallpaper most of
--- the time and it looks good with blur. Everything else stays opaque so that
--- text and images render exactly as intended.
-hl.window_rule({
-  match   = { class = "^(kitty)$" },
-  opacity = "0.94 0.88",
-})
+-- No opacity rule for kitty on purpose.
+--
+-- A window-rule opacity fades the whole window, text included, which makes a
+-- terminal look washed out. kitty's own `background_opacity` (see
+-- config/kitty/kitty.conf) makes only the background translucent and leaves
+-- glyphs fully opaque — that is what reads well over blur.
 
 -- Never make these transparent — transparency on an image viewer or design tool
 -- is actively misleading.
@@ -170,27 +179,21 @@ hl.window_rule({
 -- Workspace rules
 --------------------------------------------------------------------------
 
--- "Smart gaps": when a workspace holds exactly one tiled window, drop the gaps,
--- border and rounding so it uses the whole screen. On a 16" laptop that
--- reclaims real estate you actually notice.
+-- "Smart gaps" removed on purpose.
 --
---   w[tv1]  = workspace with exactly 1 tiled, visible window
---   s[false] = not a special workspace (leave the scratchpad alone)
-hl.workspace_rule({ workspace = "w[tv1]s[false]", gaps_out = 0, gaps_in = 0 })
-hl.workspace_rule({ workspace = "f[1]s[false]",   gaps_out = 0, gaps_in = 0 })
-
-hl.window_rule({
-  name        = "smart-gaps-single",
-  match       = { float = false, workspace = "w[tv1]s[false]" },
-  border_size = 0,
-  rounding    = 0,
-})
-hl.window_rule({
-  name        = "smart-gaps-fullscreen",
-  match       = { float = false, workspace = "f[1]s[false]" },
-  border_size = 0,
-  rounding    = 0,
-})
+-- It used to strip the gaps, border and rounding whenever a workspace held a
+-- single tiled window, to reclaim screen space. That is why one terminal on an
+-- empty workspace looked almost fullscreen. A single window now gets the same
+-- frame as any other, which is easier to read and more consistent.
+--
+-- To bring it back, restore these four rules:
+--
+--   hl.workspace_rule({ workspace = "w[tv1]s[false]", gaps_out = 0, gaps_in = 0 })
+--   hl.workspace_rule({ workspace = "f[1]s[false]",   gaps_out = 0, gaps_in = 0 })
+--   hl.window_rule({ name = "smart-gaps-single",
+--     match = { float = false, workspace = "w[tv1]s[false]" }, border_size = 0, rounding = 0 })
+--   hl.window_rule({ name = "smart-gaps-fullscreen",
+--     match = { float = false, workspace = "f[1]s[false]" },   border_size = 0, rounding = 0 })
 
 -- The scratchpad renders slightly inset so it visibly floats over the desktop.
 hl.workspace_rule({
@@ -213,10 +216,17 @@ hl.workspace_rule({
 hl.layer_rule({ match = { namespace = "^waybar$" }, blur = true, ignore_alpha = 0.3 })
 hl.layer_rule({ match = { namespace = "^rofi$" },   blur = true, ignore_alpha = 0.3 })
 
+-- Deliberately a prefix match rather than an exact list: swaync uses several
+-- namespaces (control-center, notification-window, and more depending on
+-- version) and an exact pattern that misses one silently leaves it unblurred.
+--
+-- Blur only shows through if the surface is actually translucent — swaync's
+-- own CSS backgrounds are set around 0.75 alpha for exactly this reason.
 hl.layer_rule({
-  match        = { namespace = "^swaync-(control-center|notification-window)$" },
+  match        = { namespace = "^swaync-.*" },
   blur         = true,
-  ignore_alpha = 0.3,
+  blur_popups  = true,
+  ignore_alpha = 0.2,
 })
 
 -- The volume/brightness OSD pops up constantly; animating it is distracting.

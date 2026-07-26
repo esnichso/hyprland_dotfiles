@@ -111,8 +111,10 @@ cat <<'EOF'
 
    Next steps:
      1. ./link.sh              symlink the config into ~/.config
-     2. reboot
-     3. at the SDDM login screen pick the "Hyprland (uwsm-managed)" session
+     2. ~/.config/hypr/scripts/theme.sh
+                               apply GTK theme settings that live in gsettings
+     3. reboot
+     4. at the SDDM login screen pick the "Hyprland (uwsm-managed)" session
 
    If Hyprland fails to start, switch to a TTY with Ctrl+Alt+F2 and check:
      journalctl --user -b -u hyprland-session.target

@@ -17,7 +17,10 @@ local mod = "SUPER"
 local terminal    = "kitty"
 local fileManager = "thunar"
 local launcher    = "rofi -show drun"
-local browser     = "xdg-open https://" -- replaced once you pick a browser
+
+-- Scripts live next to the config; ~ isn't expanded inside exec_cmd's argument
+-- list, so build the path from HOME.
+local scripts = os.getenv("HOME") .. "/.config/hypr/scripts"
 
 -- Small helper so a bind reads as one line instead of three.
 local function bind(keys, action, flags)
@@ -32,12 +35,22 @@ bind("Return", hl.dsp.exec_cmd(terminal),    { description = "Terminal" })
 bind("E",      hl.dsp.exec_cmd(fileManager), { description = "File manager" })
 bind("R",      hl.dsp.exec_cmd(launcher),    { description = "Application launcher" })
 
--- Power menu: logout / reboot / shutdown, first-party Hyprland dialog.
-bind("M", hl.dsp.exec_cmd("hyprshutdown"), { description = "Power menu" })
+-- Power menu: rofi chooser for lock / logout / suspend / reboot / shutdown.
+--
+-- Not plain `hyprshutdown` — that is a graceful-exit tool, not a menu. It logs
+-- you straight out, choosing the action via --post-cmd at invocation. The
+-- script wraps it so one keybind covers every option.
+bind("M", hl.dsp.exec_cmd(scripts .. "/powermenu.sh"), { description = "Power menu" })
 
 -- Lock. Goes through logind rather than calling hyprlock directly, so hypridle
 -- and anything else listening for the session-lock signal stay in sync.
-bind("L", hl.dsp.exec_cmd("loginctl lock-session"), { description = "Lock screen" })
+--
+-- On Escape rather than L: L belongs to hjkl navigation, and Caps Lock is
+-- already remapped to Escape (see input.lua), so this is a comfortable reach.
+bind("Escape", hl.dsp.exec_cmd("loginctl lock-session"), { description = "Lock screen" })
+
+-- Random wallpaper, right now. hyprpaper also rotates on its own every 15 min.
+bind("W", hl.dsp.exec_cmd(scripts .. "/wallpaper.sh"), { description = "Random wallpaper" })
 
 --------------------------------------------------------------------------
 -- Window management
@@ -81,12 +94,9 @@ local resize_delta = {
 }
 
 for _, d in ipairs(directions) do
-  -- SUPER + hjkl / arrows: move focus.
-  -- SUPER+L is the lock bind above, so focus-right lives on the arrow key and
-  -- on SUPER+odiaeresis (the key right of L on a German keyboard).
-  if d.key ~= "L" then
-    bind(d.key, hl.dsp.focus({ direction = d.dir }), { description = "Focus " .. d.dir })
-  end
+  -- SUPER + hjkl / arrows: move focus. All four keys, no gaps — the lock bind
+  -- moved to SUPER+Escape so that L stays where vim muscle memory expects it.
+  bind(d.key,   hl.dsp.focus({ direction = d.dir }), { description = "Focus " .. d.dir })
   bind(d.arrow, hl.dsp.focus({ direction = d.dir }), { description = "Focus " .. d.dir })
 
   -- SUPER + SHIFT + hjkl / arrows: move the window itself.
@@ -98,9 +108,6 @@ for _, d in ipairs(directions) do
   bind("CTRL + " .. d.key,   hl.dsp.window.resize({ x = delta.x, y = delta.y, relative = true }), { repeating = true, description = "Resize " .. d.dir })
   bind("CTRL + " .. d.arrow, hl.dsp.window.resize({ x = delta.x, y = delta.y, relative = true }), { repeating = true, description = "Resize " .. d.dir })
 end
-
--- Focus right on hjkl. On the German layout the key right of L is ö.
-bind("odiaeresis", hl.dsp.focus({ direction = "right" }), { description = "Focus right (hjkl)" })
 
 -- Cycle windows on the current workspace, ignoring layout position.
 bind("Tab", hl.dsp.window.cycle_next(),                  { description = "Next window" })
@@ -128,8 +135,8 @@ bind("comma",  hl.dsp.focus({ workspace = "e-1" }), { description = "Previous wo
 
 -- Scratchpad: a workspace that floats above whatever you're doing. Put a
 -- terminal or notes app here and toggle it in and out.
-bind("S",         hl.dsp.workspace.toggle_special("scratch"),         { description = "Toggle scratchpad" })
-bind("SHIFT + S", hl.dsp.window.move({ workspace = "special:scratch" }), { description = "Send to scratchpad" })
+bind("S",         hl.dsp.workspace.toggle_special("scratch"),           { description = "Toggle scratchpad" })
+bind("ALT + S",   hl.dsp.window.move({ workspace = "special:scratch" }), { description = "Send to scratchpad" })
 
 --------------------------------------------------------------------------
 -- Mouse
@@ -144,17 +151,30 @@ hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 -- Screenshots
 --------------------------------------------------------------------------
 
--- Print            select a region, annotate in satty
--- SHIFT + Print    whole screen, annotate in satty
--- SUPER + Print    select a region straight to the clipboard, no UI
+-- This keyboard has no Print key, so the primary binds are on SUPER+SHIFT:
+--
+--   SUPER + SHIFT + S    select a region, annotate in satty
+--   SUPER + SHIFT + D    whole screen, annotate in satty
+--   SUPER + SHIFT + A    select a region straight to the clipboard, no UI
+--
+-- SUPER+SHIFT+S is deliberate muscle memory from Windows. The Print variants
+-- are kept as well, for when an external keyboard that has the key is docked.
 --
 -- In satty: Ctrl+C copies, Ctrl+S saves to ~/Pictures/Screenshots.
 local satty = 'satty -f - --copy-command wl-copy --early-exit '
   .. '--output-filename "$HOME/Pictures/Screenshots/%Y%m%d-%H%M%S.png"'
 
-hl.bind("Print",         hl.dsp.exec_cmd('grim -g "$(slurp -d)" - | ' .. satty), { description = "Screenshot region" })
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd("grim - | " .. satty),                  { description = "Screenshot screen" })
-bind("Print",            hl.dsp.exec_cmd('grim -g "$(slurp -d)" - | wl-copy'),   { description = "Screenshot region to clipboard" })
+local shot_region    = 'grim -g "$(slurp -d)" - | ' .. satty
+local shot_screen    = "grim - | " .. satty
+local shot_clipboard = 'grim -g "$(slurp -d)" - | wl-copy'
+
+bind("SHIFT + S", hl.dsp.exec_cmd(shot_region),    { description = "Screenshot region" })
+bind("SHIFT + D", hl.dsp.exec_cmd(shot_screen),    { description = "Screenshot whole screen" })
+bind("SHIFT + A", hl.dsp.exec_cmd(shot_clipboard), { description = "Screenshot region to clipboard" })
+
+hl.bind("Print",         hl.dsp.exec_cmd(shot_region), { description = "Screenshot region" })
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd(shot_screen), { description = "Screenshot whole screen" })
+bind("Print",            hl.dsp.exec_cmd(shot_clipboard), { description = "Screenshot region to clipboard" })
 
 -- Colour picker: click anywhere, hex lands in the clipboard.
 bind("SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"), { description = "Pick a colour" })

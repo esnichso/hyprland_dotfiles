@@ -11,6 +11,7 @@ maintained rather than copied.
 | [PACKAGES.md](PACKAGES.md) | What gets installed and why. Names and versions verified against live Arch/AUR APIs. |
 | [SETUP.md](SETUP.md) | Step-by-step: build here → validate in a VM → install on metal → first-login checklist. |
 | [KEYBINDS.md](KEYBINDS.md) | Every keybinding and gesture, in one page. |
+| [PLAN.md](PLAN.md) | Round-2 fix list from the VM run, and what each change was for. |
 | `config/` | The actual configuration, symlinked into `~/.config`. |
 | `install/` | Package lists, `bootstrap.sh`, `link.sh`. |
 | `docs/hyprland/` | Snapshot of the official wiki (38 pages + upstream example config, 2026-07-26). |
@@ -33,13 +34,22 @@ config/
 ├── uwsm/
 │   ├── env                 session-wide environment variables
 │   └── env-hyprland        Hyprland-only variables (empty by default)
+├── kitty/                  font, palette, background_opacity
+├── gtk-3.0/, gtk-4.0/      GTK + libadwaita theming
+├── qt5ct/, qt6ct/          Qt palette, so Dolphin matches
+├── fish/                   shell config
+├── starship.toml           prompt
 ├── waybar/                 config.jsonc + style.css
-├── rofi/                   config.rasi + catppuccin-mocha.rasi
+├── rofi/                   launcher + power menu themes
 └── swaync/                 config.json + style.css + NOTES.md
 ```
 
-Your existing `~/.config/kitty` and `~/.config/btop` are deliberately **not**
-in here, so they carry over from Ubuntu untouched.
+`kitty/` is now included — it sets the font, the Catppuccin palette and
+`background_opacity`, which is what produces blur behind the terminal. If you
+had kitty keybindings on Ubuntu worth keeping, paste them at the end of
+`config/kitty/kitty.conf`; `link.sh` backs up whatever was there first.
+
+`~/.config/btop` is still deliberately left alone.
 
 ## Decisions
 
@@ -52,8 +62,11 @@ in here, so they carry over from Ubuntu untouched.
 | Layout | Dwindle | Predictable binary splits, well documented, good on one 16" panel. |
 | Bar | Waybar | JSONC + CSS. Readable, hand-writable, hard to break. |
 | Keybinds | hjkl **and** arrows | Same actions on both, so muscle memory can catch up. |
-| Terminal | kitty | Already in use; existing config carries over untouched. |
+| Terminal | kitty | Catppuccin palette and `background_opacity` for real blur behind text. |
 | Look | Catppuccin Mocha, gaps, rounding, blur | Modern dark, moderate animations. |
+| Fonts | Rubik for UI, JetBrains Mono in the terminal | Proportional text reads better in a bar; mono only where alignment matters. |
+| Shell | fish + starship | One TOML prompt config that survives a change of shell. |
+| Qt theming | qt6ct + custom palette | No unpackaged Kvantum theme to fetch by hand. |
 
 ## The Lua thing
 

@@ -1,0 +1,60 @@
+// Power menu theme — used by config/hypr/scripts/powermenu.sh.
+//
+// Same palette and radii as the launcher, but narrow and list-shaped: five
+// fixed entries, no search field to type into.
+
+@import "catppuccin-mocha"
+
+window {
+  width:         300px;
+  border-radius: 14px;
+}
+
+mainbox {
+  children: [ inputbar, listview ];
+  padding:  10px;
+  spacing:  8px;
+}
+
+// The prompt acts as a title bar; there is nothing to search for, so the
+// text entry itself is hidden.
+inputbar {
+  children:         [ prompt ];
+  background-color: transparent;
+  padding:          4px 8px;
+}
+
+prompt {
+  text-color:  @mauve;
+  font:        "Rubik Medium 13";
+  vertical-align: 0.5;
+}
+
+listview {
+  lines:        5;
+  fixed-height: true;
+  scrollbar:    false;
+  spacing:      2px;
+}
+
+element {
+  padding:       10px 14px;
+  border-radius: 10px;
+  spacing:       0px;
+}
+
+element-text {
+  vertical-align: 0.5;
+  text-color:     inherit;
+}
+
+element normal.normal {
+  text-color: @subtext0;
+}
+
+element selected.normal {
+  background-color: @surface1;
+  text-color:       @text;
+  border:           0px 0px 0px 3px;
+  border-color:     @mauve;
+}

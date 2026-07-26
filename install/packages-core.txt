@@ -77,7 +77,10 @@ nwg-look
 papirus-icon-theme
 qt6ct
 qt5ct
-kvantum
+
+# Shell
+fish
+starship
 
 # Applications
 kitty

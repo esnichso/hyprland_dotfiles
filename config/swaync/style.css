@@ -20,7 +20,7 @@
 @define-color green    #a6e3a1;
 
 * {
-  font-family: "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
+  font-family: "Rubik", "JetBrainsMono Nerd Font", "Noto Sans", sans-serif;
   font-size: 14px;
 }
 
@@ -32,7 +32,7 @@
 }
 
 .notification {
-  background: alpha(@base, 0.92);
+  background: alpha(@base, 0.72);
   border: 1px solid @surface1;
   border-radius: 14px;
   margin: 8px 12px 0 12px;
@@ -95,7 +95,7 @@
 /* ---------------------------------------------------- control centre */
 
 .control-center {
-  background: alpha(@base, 0.85);
+  background: alpha(@base, 0.70);
   border: 1px solid @surface1;
   border-radius: 16px;
   padding: 12px;
@@ -150,7 +150,7 @@
 /* Media player, volume and brightness sliders. */
 
 .widget-mpris {
-  background: alpha(@mantle, 0.7);
+  background: alpha(@mantle, 0.55);
   border-radius: 12px;
   padding: 8px;
   margin-bottom: 8px;
@@ -161,7 +161,7 @@
 
 .widget-volume,
 .widget-backlight {
-  background: alpha(@mantle, 0.7);
+  background: alpha(@mantle, 0.55);
   color: @text;
   border-radius: 12px;
   padding: 8px 12px;
