@@ -127,8 +127,17 @@ Hyprland reloads the moment the files change on disk:
 
 ```bash
 # in the VM, after pushing a fix from the host
-cd ~/hypersetup && git pull && hyprctl reload
+cd ~/hypersetup && git pull && ./install/link.sh && hyprctl reload
 ```
+
+`link.sh` is in there because a pull that adds a *new* config directory has
+nothing linking it into `~/.config` yet; it's a no-op when nothing is new.
+
+You may see an "Emergency mode tripped" banner during the pull itself. Hyprland
+reloads the moment a file changes, so it can catch git mid-checkout with a file
+momentarily missing. The `hyprctl reload` at the end clears it, and the pcall
+guard in `hyprland.lua` keeps the damage to a single module rather than the
+whole config.
 
 Waybar doesn't hot-reload as reliably; `SUPER+SHIFT+B` restarts it.
 
