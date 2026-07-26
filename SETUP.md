@@ -86,90 +86,56 @@ Follow Phase 3's installer steps exactly as you will on metal, including selecti
 
 **5. Get this repo into the VM**
 
-Use a **virtiofs share**. Edits made here on Ubuntu appear in the VM instantly,
-which is what makes "fix it in the repo, not in the VM" work in practice.
+Over git. Nothing is shared between the host and guest filesystems — the VM
+just clones from a remote like any other machine would. You need a remote for
+the metal install in Phase 3 anyway, so this is set up once and reused.
 
-With the VM shut down, in virt-manager:
-
-- **Memory** → tick **Enable shared memory**. virtiofs will not start without it.
-- **Add Hardware → Filesystem**:
-  - Driver: `virtiofs`
-  - Source path: `/home/lucas/HPI/projects/hypersetup`
-  - Target path (this is a tag, not a path): `hypersetup`
-
-Then in the guest:
+The repo is already initialised locally with a first commit. Create an **empty
+private repository** on GitHub (or Codeberg, or wherever), then on the host:
 
 ```bash
-sudo mkdir -p /mnt/hypersetup
-sudo mount -t virtiofs hypersetup /mnt/hypersetup
-
-# make it survive reboots
-echo 'hypersetup  /mnt/hypersetup  virtiofs  defaults,nofail  0 0' | sudo tee -a /etc/fstab
+cd ~/HPI/projects/hypersetup
+git remote add origin git@github.com:<you>/hypersetup.git
+git push -u origin main
 ```
 
-If UID mapping makes the share read-only in the guest, that's fine — both
-scripts only read from the repo. If it fights you anyway, `cp -r
-/mnt/hypersetup ~/hypersetup` and re-copy after each round of edits.
-
-<details>
-<summary>Fallback: no VM reconfiguration, one-shot copy over HTTP</summary>
-
-A throwaway web server on the host. Two rules: serve a directory containing
-**only** the tarball, and bind to the VM bridge address rather than `0.0.0.0`,
-so nothing else on your network can reach it.
-
-On the host:
-
-```bash
-# Find your VM network's gateway address — do NOT assume 192.168.122.1.
-# That is libvirt's default, but a custom network will differ.
-virsh net-list
-virsh net-dumpxml <network-name> | grep "ip address"
-
-mkdir -p /tmp/vmshare
-cd ~/HPI/projects
-tar czf /tmp/vmshare/hypersetup.tar.gz --exclude=docs --exclude=.git hypersetup
-
-cd /tmp/vmshare
-python3 -m http.server 8123 --bind <gateway-ip>
-```
+Your `~/.ssh/id_ed25519` key already exists, so SSH works if that key is on
+your account. If you'd rather not put the key in the VM, clone over HTTPS
+instead — the repo holds no secrets, but keep it private regardless since it
+describes your machine in detail.
 
 In the guest:
 
 ```bash
-curl -O http://<gateway-ip>:8123/hypersetup.tar.gz
-tar xzf hypersetup.tar.gz -C ~
+sudo pacman -S --needed git
+git clone https://github.com/<you>/hypersetup.git ~/hypersetup
 ```
-
-Then **stop the server** — Ctrl+C in that terminal. It has no authentication;
-anything that can route to that address can read the directory.
-
-If curl hangs in the guest, the host firewall is dropping guest→host traffic:
-
-```bash
-sudo ufw status
-sudo ufw allow in on virbr0 to any port 8123 proto tcp   # adjust the bridge name
-```
-
-`--exclude=docs` skips the wiki cache, which you don't need inside the VM.
-</details>
 
 **6. Bring up the config**
 
 ```bash
-cd /mnt/hypersetup/install
+cd ~/hypersetup/install
 ./bootstrap.sh --dry-run     # read what it will do first
 ./bootstrap.sh
 ./link.sh
 sudo reboot
 ```
 
-Because `link.sh` symlinks rather than copies, the VM's live config now points
-at the share — edit a file here on Ubuntu and Hyprland reloads it on save
-inside the VM. Just don't unmount the share while the session is running.
+**The iteration loop.** `link.sh` symlinks rather than copies, so `~/.config/hypr`
+inside the VM points at the clone. That makes pulling a change a one-liner —
+Hyprland reloads the moment the files change on disk:
+
+```bash
+# in the VM, after pushing a fix from the host
+cd ~/hypersetup && git pull && hyprctl reload
+```
+
+Waybar doesn't hot-reload as reliably; `SUPER+SHIFT+B` restarts it.
 
 Then work through the Phase 4 checklist inside the VM. Expect a few failures —
-that is the entire point of this phase. Fix them in the repo here, not in the VM.
+that is the entire point of this phase. Fix them in the repo here, commit, push,
+pull in the VM. Don't edit inside the VM: it's the throwaway half of this pair,
+and changes made there are lost when you delete it.
 
 **Known VM caveats** (do not chase these; they will not reproduce on metal):
 animations are choppy, brightness keys do nothing (no backlight device), battery
@@ -265,23 +231,22 @@ grep -oE '^\[cachyos[a-z0-9-]*\]' /etc/pacman.conf
 
 **6. Install our stack**
 
-There's no host to share from any more, so the repo has to arrive over the
-network or on a stick. Push it to a private Git remote **before** you wipe
-Ubuntu, then:
+Same remote you set up in Phase 1 — and by now it also holds every fix the VM
+run turned up. **Push any outstanding commits before you wipe Ubuntu**; this
+machine is about to stop existing.
 
 ```bash
 sudo pacman -S --needed git
-git clone https://github.com/<you>/hypersetup ~/hypersetup
+git clone https://github.com/<you>/hypersetup.git ~/hypersetup
 cd ~/hypersetup/install
 ./bootstrap.sh
 ./link.sh
 sudo reboot
 ```
 
-No remote? Copy the directory onto the same USB stick you'll use for the
-backup in Phase 2, and `cp -r /run/media/$USER/<stick>/hypersetup ~/`. Set up
-`git init` on the ThinkPad afterwards regardless — you want version control in
-place before you start changing things.
+Belt and braces: drop a copy of the repo on the same USB stick as the Phase 2
+backup. If the remote is unreachable from a fresh install — no Wi-Fi driver, no
+network yet — you'd otherwise be stuck with no config and no way to fetch it.
 
 At the SDDM login screen pick **Hyprland (uwsm-managed)**.
 
