@@ -249,12 +249,17 @@ def gen_rofi_colors(t: Theme) -> str:
     lines.append("")
     for role in sorted(t.roles):
         lines.append(f"  {role.replace('_', '-') + ':':<12}{t.role(role)};")
-    lines.append("")
-    lines.append("  /* Shorthands used by the theme files. */")
+    # No comments inside the block: rofi's rasi parser silently discards every
+    # declaration that follows one, so the names below would fail to resolve.
+    # Shorthands, plus translucent variants (#rrggbbaa) for window fills — the
+    # blur in rules.lua needs something to show through.
     lines.append(f"  bg:         {t.hex('base')};")
     lines.append(f"  bg-alt:     {t.hex('mantle')};")
     lines.append(f"  bg-dim:     {t.hex('crust')};")
     lines.append(f"  fg:         {t.hex('text')};")
+    lines.append(f"  bg-a:       {t.hex('base')}d1;")
+    lines.append(f"  bg-alt-a:   {t.hex('mantle')}b8;")
+    lines.append(f"  bg-dim-a:   {t.hex('crust')}d1;")
     lines.append("}")
     return "\n".join(lines) + "\n"
 

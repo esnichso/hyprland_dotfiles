@@ -104,6 +104,9 @@ while IFS= read -r f; do
 	fi
 done < <(find config install -name '*.sh' | sort)
 
+say "rofi themes"
+if ./install/check-rofi.py; then :; else FAIL=1; fi
+
 say "Generated colours in sync with the theme"
 THEME_STATE="${XDG_STATE_HOME:-$HOME/.local/state}/hypr/theme"
 CURRENT_THEME="mocha"

@@ -199,3 +199,25 @@ If it's still missing on metal, the module needs an explicit `"bat": "BAT0"`.
 Nothing here blocks the metal install — it's all config, and it all travels
 through git. If you'd rather get onto real hardware first and fix the rest
 there, that works too, and the battery question answers itself.
+
+
+---
+
+## Round 3 — rofi theming (2026-07-27)
+
+Three bugs, all in the same area:
+
+1. `launcher.rasi` still carried a hardcoded Catppuccin palette and no
+   `@import "colors"`. My edit script's regex was anchored with `^` but
+   without `re.M`, so it matched nothing — and printed success anyway. The
+   launcher therefore resolved palette names locally but not the new
+   shorthands (`bg`, `bg-alt`, `fg`), which is exactly the set rofi
+   complained about.
+2. A comment inside the `*` block of the generated `colors.rasi` made rofi
+   discard every declaration after it. That is why the wallpaper picker fell
+   back to rofi's stock light theme: its `@bg-a` and friends never resolved.
+3. Two more in-block comments in `launcher.rasi` and `wallpaper.rasi`, found
+   by the checker written for #2.
+
+`install/check-rofi.py` now enforces both rules: no comments inside blocks,
+and every `@variable` defined in the generated palette.

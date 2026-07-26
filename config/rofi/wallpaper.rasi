@@ -12,7 +12,7 @@ window {
   width:        60%;
   height:       55%;
 
-  background-color: @bg-alt;
+  background-color: @bg-a;
   border:           1px;
   border-color:     @surface1;
   border-radius:    14px;
@@ -26,7 +26,7 @@ mainbox {
 
 inputbar {
   children:         [ prompt, entry ];
-  background-color: @bg-dim;
+  background-color: @bg-alt-a;
   border-radius:    10px;
   padding:          10px 14px;
   spacing:          10px;
@@ -43,16 +43,15 @@ entry {
   vertical-align:    0.5;
 }
 
+// The grid. 4 across is a good balance at 60% width on a 16" panel.
 listview {
-  // The grid. 4 across is a good balance at 60% width on a 16" panel.
   layout:  vertical;
   columns: 4;
   lines:   3;
 
   spacing:   10px;
   scrollbar: false;
-  fixed-height: false;
-}
+  fixed-height: false;}
 
 element {
   orientation:   vertical;
@@ -62,7 +61,7 @@ element {
   cursor:        pointer;
 }
 
-// The thumbnail. rofi renders the image passed via the dmenu icon protocol.
+// The thumbnail: rofi renders the image passed via the dmenu icon protocol.
 element-icon {
   size:             160px;
   horizontal-align: 0.5;

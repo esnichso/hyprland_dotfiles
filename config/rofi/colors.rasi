@@ -36,10 +36,11 @@
   success:    #a6e3a1;
   urgent:     #f38ba8;
   warning:    #fab387;
-
-  /* Shorthands used by the theme files. */
   bg:         #1e1e2e;
   bg-alt:     #181825;
   bg-dim:     #11111b;
   fg:         #cdd6f4;
+  bg-a:       #1e1e2ed1;
+  bg-alt-a:   #181825b8;
+  bg-dim-a:   #11111bd1;
 }
