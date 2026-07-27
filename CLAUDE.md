@@ -178,6 +178,15 @@ this — `require`'s built-in error isolation does *not* cover module lookup, an
 without the guard a missing file drops the session into emergency mode with no
 binds at all.
 
+**fastfetch's `key.width` truncates, and an empty `keyIcon` is not "no
+override".** `"keyIcon": ""` *replaces* the built-in glyph with nothing while
+still costing its two columns inside `key.width` — so `width: 13` rendered
+`Terminal Font` as `Terminal Fo` with the value jammed against it, and a
+`key.type` of `icon` with empty icons produced a column of blank keys. Whether
+the separator is drawn inside or after the key field is not stated anywhere;
+setting `display.separator` to `""` and letting `key.width` create the gap
+makes both readings identical.
+
 **fastfetch has no responsive mode**, and it does not degrade gracefully.
 Verified against upstream's JSON schema: a module's `condition` tests only
 `system`, `arch` and `succeeded`, and `display` has no width option. Worse,
@@ -189,6 +198,12 @@ run under the art) and wrong without one. Hence three configs in
 thresholds are measured, not chosen: the built-in `cachyos` art is 54 columns,
 `cachyos_small` is 24. Only the fish path is width-aware — bash and a TTY get
 `config.jsonc`, the wide one.
+
+Measure the *values* too, not just the logo. The first threshold counted the
+art and guessed at the text, landing ten columns low — so a terminal in that
+band would have been silently clipped. The binding constraint was the `theme`
+module, whose default prints Qt and GTK together at 59 columns, 14 more than
+anything else on the list.
 
 **hyprpaper rotates by default.** With a directory as `path` it cycles on
 `timeout`, default 30 seconds. The user explicitly does not want automatic

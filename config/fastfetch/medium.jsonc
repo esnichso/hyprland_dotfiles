@@ -1,12 +1,11 @@
 {
   // Half-screen layout — a vertical split on the 2560x1600 panel is around
-  // 85 columns, which is not enough for config.jsonc's 54-column logo.
+  // 68 columns, which is nowhere near config.jsonc's 118.
   //
   // The built-in `cachyos_small` art is 24 columns and 11 lines; fastfetch
   // selects it with logo.type "small" rather than by name. 24 + 4 padding +
-  // 12 key column + ~35 value is about 75 columns, so this is used from 68 up.
-  // Below 68 the value column starts losing characters and compact.jsonc
-  // takes over.
+  // 8 key field + 30 value ("Intel(R) Core(TM) Ultra 7 255H", trimmed to
+  // {name}) is 66 columns, so this is used from 68 up.
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
 
   "logo": {
@@ -18,14 +17,17 @@
   },
 
   "display": {
-    "separator": "  ",
+    // See config.jsonc: empty separator, gap comes from key.width, which
+    // truncates rather than only padding.
+    "separator": "",
     "color": {
       "keys": "blue",
       "title": "magenta"
     },
+    // 8 = len("Kernel") + 2.
     "key": {
-      "type": "both",
-      "width": 10
+      "type": "string",
+      "width": 8
     }
   },
 
@@ -33,21 +35,23 @@
   // rather than dangling below it.
   "modules": [
     "title",
-    { "type": "separator", "string": "─", "times": 30 },
+    { "type": "separator", "string": "─", "times": 32 },
 
-    { "type": "os", "key": "OS", "keyIcon": "" },
-    { "type": "kernel", "key": "Kernel", "keyIcon": "", "format": "{release}" },
-    { "type": "uptime", "key": "Up", "keyIcon": "" },
-    { "type": "packages", "key": "Pkgs", "keyIcon": "" },
-    { "type": "wm", "key": "WM", "keyIcon": "" },
+    { "type": "os", "key": "OS" },
+    { "type": "kernel", "key": "Kernel", "format": "{release}" },
+    { "type": "uptime", "key": "Up" },
+    { "type": "packages", "key": "Pkgs" },
+    { "type": "wm", "key": "WM" },
 
     "break",
 
-    { "type": "cpu", "key": "CPU", "keyIcon": "", "format": "{name}" },
-    { "type": "gpu", "key": "GPU", "keyIcon": "", "format": "{name}" },
-    { "type": "memory", "key": "RAM", "keyIcon": "" },
-    { "type": "disk", "key": "Disk", "keyIcon": "", "folders": "/" },
-    { "type": "battery", "key": "Batt", "keyIcon": "", "format": "{capacity}% ({status})" },
+    // {name} only: the default appends core count and frequency, which is
+    // 15 columns this layout does not have.
+    { "type": "cpu", "key": "CPU", "format": "{name}" },
+    { "type": "gpu", "key": "GPU", "format": "{name}" },
+    { "type": "memory", "key": "RAM" },
+    { "type": "disk", "key": "Disk", "folders": "/", "format": "{size-used} / {size-total}" },
+    { "type": "battery", "key": "Batt", "format": "{capacity}% ({status})" },
 
     "break",
 

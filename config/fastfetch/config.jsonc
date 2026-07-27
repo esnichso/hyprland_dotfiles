@@ -4,12 +4,12 @@
   // fastfetch has no responsive mode. A config commits to a logo and a module
   // list, and if (logo width + key column + longest value) exceeds the
   // terminal width the result is mangled. Three configs live here and
-  // fish/functions/fastfetch.fish picks between them by $COLUMNS.
+  // fish/functions/fastfetch.fish picks between them by terminal width.
   //
-  // Widths are measured, not guessed. The built-in `cachyos` ASCII logo is
+  // Widths are measured, not guessed. The built-in `cachyos` ASCII art is
   // 54 columns wide and 22 lines tall; with the padding below that is 58
-  // columns before any text starts. Key column 15, longest value ~35.
-  // Needs about 108 columns.
+  // columns before any text starts. Key field 15, longest value 45
+  // ("Intel(R) Core(TM) Ultra 7 255H (4) @ 3.69 GHz"). Needs 118 columns.
   //
   // Colours are ANSI names on purpose. They resolve to kitty's palette, which
   // install/set-theme.py already generates — so fastfetch follows the theme
@@ -23,16 +23,23 @@
   },
 
   "display": {
-    "separator": "  ",
+    // Empty separator, and the gap comes from key.width instead.
+    //
+    // Not a style choice. `key.width` is the width of the whole key field,
+    // and whether the separator is drawn inside or after it is not something
+    // the schema states. With the separator empty the two readings collapse
+    // into the same result: the value column starts at exactly key.width.
+    "separator": "",
     "color": {
       "keys": "blue",
       "title": "magenta"
     },
-    // 13 = len("Terminal Font"), the longest key below. Fixed rather than 0
-    // (unaligned) so the value column starts at a width we can add up.
+    // 15 = len("Terminal Font") + 2. key.width TRUNCATES, it does not just
+    // pad — set it to 13 and the longest key renders as "Terminal Fo" with
+    // the value jammed against it.
     "key": {
-      "type": "both",
-      "width": 13
+      "type": "string",
+      "width": 15
     }
   },
 
@@ -40,30 +47,35 @@
   // trail off below the text (logo.printRemaining defaults to true).
   "modules": [
     "title",
-    { "type": "separator", "string": "─", "times": 40 },
+    { "type": "separator", "string": "─", "times": 45 },
 
-    { "type": "os", "key": "OS", "keyIcon": "" },
-    { "type": "kernel", "key": "Kernel", "keyIcon": "" },
-    { "type": "uptime", "key": "Uptime", "keyIcon": "" },
-    { "type": "packages", "key": "Packages", "keyIcon": "" },
-    { "type": "shell", "key": "Shell", "keyIcon": "" },
-
-    "break",
-
-    { "type": "wm", "key": "WM", "keyIcon": "" },
-    { "type": "terminal", "key": "Terminal", "keyIcon": "" },
-    { "type": "terminalfont", "key": "Terminal Font", "keyIcon": "" },
-    { "type": "theme", "key": "Theme", "keyIcon": "" },
-    { "type": "icons", "key": "Icons", "keyIcon": "" },
+    { "type": "os", "key": "OS" },
+    { "type": "kernel", "key": "Kernel" },
+    { "type": "uptime", "key": "Uptime" },
+    { "type": "packages", "key": "Packages" },
+    { "type": "shell", "key": "Shell" },
 
     "break",
 
-    { "type": "cpu", "key": "CPU", "keyIcon": "" },
-    { "type": "gpu", "key": "GPU", "keyIcon": "", "format": "{name} ({type})" },
-    { "type": "memory", "key": "Memory", "keyIcon": "" },
-    { "type": "disk", "key": "Disk", "keyIcon": "", "folders": "/" },
+    { "type": "wm", "key": "WM" },
+    { "type": "terminal", "key": "Terminal" },
+    { "type": "terminalfont", "key": "Terminal Font" },
+    // GTK half only. The default prints Qt and GTK together, which on this
+    // machine is 59 columns — 14 more than anything else in the list, and
+    // enough on its own to push the whole layout past 130 columns. The Qt
+    // side is reported properly by install/doctor.sh, which is where you go
+    // when Qt theming is the actual question.
+    { "type": "theme", "key": "Theme", "format": "{theme2}" },
+    { "type": "icons", "key": "Icons", "format": "{icons2}" },
+
+    "break",
+
+    { "type": "cpu", "key": "CPU" },
+    { "type": "gpu", "key": "GPU", "format": "{name} ({type})" },
+    { "type": "memory", "key": "Memory" },
+    { "type": "disk", "key": "Disk", "folders": "/" },
     // Absent in a VM, so this module simply prints nothing there.
-    { "type": "battery", "key": "Battery", "keyIcon": "" },
+    { "type": "battery", "key": "Battery" },
 
     "break",
 

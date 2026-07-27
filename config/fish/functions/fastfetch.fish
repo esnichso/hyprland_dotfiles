@@ -7,16 +7,27 @@ function fastfetch --description "fastfetch, with a layout that fits the termina
     # succeeded, and `display` has no width key at all. So the choice has to
     # be made out here, where the terminal width is knowable.
     #
-    # Three configs live in ~/.config/fastfetch. The thresholds come from
-    # measuring the built-in ASCII art rather than from taste:
+    # Three configs live in ~/.config/fastfetch. The thresholds are the sum of
+    # the parts, measured from the built-in ASCII art and from the longest
+    # value each layout can actually produce on this machine:
     #
-    #   config.jsonc   54-column logo + 4 padding + 15 key + ~35 value  ~108
-    #   medium.jsonc   24-column logo + 4 padding + 12 key + ~35 value   ~75
-    #   compact.jsonc  no logo,          2-column icon key + ~35 value   ~40
+    #   config.jsonc   58 logo + 15 key + 45 value ("Intel(R) Core(TM)      118
+    #                  Ultra 7 255H (4) @ 3.69 GHz")
+    #   medium.jsonc   28 logo +  8 key + 30 value (CPU trimmed to {name})     66
+    #   compact.jsonc   0 logo +  6 key + 32 value                             38
     #
-    # Below the threshold the layout does not degrade gracefully — the text
-    # column is clipped at the right margin, because fastfetch disables line
-    # wrap while it draws so that long values cannot run under the logo.
+    # The value half matters as much as the logo and is easy to forget. The
+    # first version of this counted the logo and guessed 35 for the values,
+    # which put the wide threshold at 108 — ten columns below what the layout
+    # needs, so anything between 108 and 118 would have been quietly clipped.
+    #
+    # Below the threshold the layout does not degrade gracefully: the text is
+    # clipped at the right margin, because fastfetch disables line wrap while
+    # it draws so that long values cannot run under the logo.
+    #
+    # Note that fastfetch's own -l/--logo flag is unrelated to this. It sets
+    # the logo, not the layout — `fastfetch -l small` still uses whichever
+    # config was chosen here. Use FASTFETCH_LAYOUT below to force one.
 
     # Anything that names its own config wins, as do --help, --version and
     # friends: passing --config as well would either conflict or be confusing.
@@ -56,7 +67,7 @@ function fastfetch --description "fastfetch, with a layout that fits the termina
         case wide medium compact
             set layout $want
         case '*'
-            if test $cols -ge 108
+            if test $cols -ge 118
                 set layout wide
             else if test $cols -ge 68
                 set layout medium
