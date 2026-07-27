@@ -1,0 +1,77 @@
+# Gruvbox Dark — warm, low-blue, high contrast.
+#
+# The opposite end of the range from Tokyo Night: browns and ochres rather
+# than blues. Worth a try in the evening — there is almost no blue light in
+# the background colours.
+#
+# Gruvbox has fewer accents than Catppuccin, so a few slots repeat with small
+# variations. That's fine: nothing requires the fourteen to be distinct.
+#
+# No packaged GTK theme, so this recolours Adwaita — see themes/tokyo-night.toml
+# for what that does and doesn't cover.
+
+name = "Gruvbox Dark"
+dark = true
+
+gtk_theme = "Adwaita-dark"
+icon_theme = "Papirus-Dark"
+
+[palette]
+crust    = "#1d2021"
+mantle   = "#282828"
+base     = "#32302f"
+
+surface0 = "#3c3836"
+surface1 = "#504945"
+surface2 = "#665c54"
+
+overlay0 = "#7c6f64"
+overlay1 = "#928374"
+overlay2 = "#a89984"
+
+subtext0 = "#bdae93"
+subtext1 = "#d5c4a1"
+text     = "#ebdbb2"
+
+rosewater = "#fbf1c7"
+flamingo  = "#f3c3ad"
+pink      = "#e79aae"
+mauve     = "#d3869b"
+red       = "#fb4934"
+maroon    = "#ea6962"
+peach     = "#fe8019"
+yellow    = "#fabd2f"
+green     = "#b8bb26"
+teal      = "#8ec07c"
+sky       = "#89b482"
+sapphire  = "#83a598"
+blue      = "#83a598"
+lavender  = "#e0b3c8"
+
+[roles]
+# Orange, the colour gruvbox is recognised by.
+accent     = "peach"
+accent_alt = "yellow"
+urgent     = "red"
+warning    = "yellow"
+success    = "green"
+info       = "sapphire"
+link       = "sapphire"
+
+[ansi]
+black          = "surface1"
+red            = "red"
+green          = "green"
+yellow         = "yellow"
+blue           = "blue"
+magenta        = "mauve"
+cyan           = "teal"
+white          = "subtext1"
+bright_black   = "surface2"
+bright_red     = "maroon"
+bright_green   = "green"
+bright_yellow  = "peach"
+bright_blue    = "sapphire"
+bright_magenta = "pink"
+bright_cyan    = "teal"
+bright_white   = "text"

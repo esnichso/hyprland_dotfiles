@@ -13,3 +13,10 @@ gtk-engine-murrine
 # and BLAS/LAPACK — roughly 20 packages, permanently installed, for a cursor
 # theme. -bin is the same 2.0.7 release, prebuilt, with no dependencies at all.
 bibata-cursor-theme-bin
+
+# The other Catppuccin flavours, for themes/frappe.toml and themes/macchiato.toml.
+# Skip these if you only ever use Mocha — the themes still work without them,
+# they just fall back to a recoloured Adwaita (see themes/tokyo-night.toml).
+catppuccin-gtk-theme-frappe
+catppuccin-gtk-theme-macchiato
+catppuccin-gtk-theme-latte

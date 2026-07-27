@@ -1,0 +1,76 @@
+# Tokyo Night — cooler and bluer than Catppuccin, with more contrast.
+#
+# The first theme here that isn't Catppuccin, which is the point: the slot
+# names are generic, so a completely different palette drops straight in.
+#
+# There is no packaged GTK theme for this palette, so `gtk_theme` names
+# Adwaita's dark variant. The generated gtk-3.0/gtk.css then redefines the
+# colours Adwaita is built on, which recolours GTK apps without theming them —
+# the shapes stay Adwaita's, the colours become these. Qt, KDE, the bar, rofi,
+# kitty and the lock screen are unaffected by that limitation.
+
+name = "Tokyo Night"
+dark = true
+
+gtk_theme = "Adwaita-dark"
+icon_theme = "Papirus-Dark"
+
+[palette]
+crust    = "#16161e"
+mantle   = "#1a1b26"
+base     = "#24283b"
+
+surface0 = "#292e42"
+surface1 = "#3b4261"
+surface2 = "#414868"
+
+overlay0 = "#565f89"
+overlay1 = "#6b7395"
+overlay2 = "#7f88ab"
+
+subtext0 = "#a9b1d6"
+subtext1 = "#b4bce3"
+text     = "#c0caf5"
+
+rosewater = "#f2c7c7"
+flamingo  = "#f7a5b0"
+pink      = "#ff75a0"
+mauve     = "#bb9af7"
+red       = "#f7768e"
+maroon    = "#ff757f"
+peach     = "#ff9e64"
+yellow    = "#e0af68"
+green     = "#9ece6a"
+teal      = "#1abc9c"
+sky       = "#89ddff"
+sapphire  = "#2ac3de"
+blue      = "#7aa2f7"
+lavender  = "#b8c9ff"
+
+[roles]
+# Blue rather than mauve: it's the colour the palette is known for.
+accent     = "blue"
+accent_alt = "mauve"
+urgent     = "red"
+warning    = "peach"
+success    = "green"
+info       = "yellow"
+link       = "sapphire"
+
+[ansi]
+black          = "surface1"
+red            = "red"
+green          = "green"
+yellow         = "yellow"
+blue           = "blue"
+magenta        = "mauve"
+cyan           = "sapphire"
+white          = "subtext1"
+bright_black   = "surface2"
+bright_red     = "maroon"
+bright_green   = "green"
+bright_yellow  = "peach"
+bright_blue    = "blue"
+bright_magenta = "pink"
+bright_cyan    = "sky"
+bright_white   = "text"

@@ -1,0 +1,69 @@
+# Catppuccin Macchiato — between Mocha and Frappé.
+#
+# The middle of the three dark flavours. Worth trying if Mocha reads too dark
+# and Frappé too washed out.
+
+name = "Catppuccin Macchiato"
+dark = true
+
+gtk_theme = "catppuccin-macchiato-mauve-standard+default"
+icon_theme = "Papirus-Dark"
+
+[palette]
+crust    = "#181926"
+mantle   = "#1e2030"
+base     = "#24273a"
+
+surface0 = "#363a4f"
+surface1 = "#494d64"
+surface2 = "#5b6078"
+
+overlay0 = "#6e738d"
+overlay1 = "#8087a2"
+overlay2 = "#939ab7"
+
+subtext0 = "#a5adcb"
+subtext1 = "#b8c0e0"
+text     = "#cad3f5"
+
+rosewater = "#f4dbd6"
+flamingo  = "#f0c6c6"
+pink      = "#f5bde6"
+mauve     = "#c6a0f6"
+red       = "#ed8796"
+maroon    = "#ee99a0"
+peach     = "#f5a97f"
+yellow    = "#eed49f"
+green     = "#a6da95"
+teal      = "#8bd5ca"
+sky       = "#91d7e3"
+sapphire  = "#7dc4e4"
+blue      = "#8aadf4"
+lavender  = "#b7bdf8"
+
+[roles]
+accent     = "mauve"
+accent_alt = "blue"
+urgent     = "red"
+warning    = "peach"
+success    = "green"
+info       = "yellow"
+link       = "blue"
+
+[ansi]
+black          = "surface1"
+red            = "red"
+green          = "green"
+yellow         = "yellow"
+blue           = "blue"
+magenta        = "pink"
+cyan           = "teal"
+white          = "subtext1"
+bright_black   = "surface2"
+bright_red     = "red"
+bright_green   = "green"
+bright_yellow  = "yellow"
+bright_blue    = "blue"
+bright_magenta = "pink"
+bright_cyan    = "teal"
+bright_white   = "subtext0"
