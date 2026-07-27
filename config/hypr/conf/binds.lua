@@ -189,11 +189,32 @@ bind("SHIFT + C", hl.dsp.exec_cmd("hyprpicker -a"), { description = "Pick a colo
 -- Clipboard and notifications
 --------------------------------------------------------------------------
 
--- Clipboard history through rofi. cliphist stores it, wl-copy puts the choice
--- back on the clipboard.
+-- Clipboard history through rofi. cliphist stores it (see autostart.lua),
+-- wl-copy puts the choice back on the clipboard. `-display-columns 2` hides
+-- cliphist's internal id, which is the first tab-separated field.
+--
+-- Paste as usual afterwards; this only sets the clipboard, it doesn't type.
 bind("SHIFT + V",
-  hl.dsp.exec_cmd('cliphist list | rofi -dmenu -display-columns 2 -p "Clipboard" | cliphist decode | wl-copy'),
+  hl.dsp.exec_cmd('cliphist list | rofi -dmenu -i -display-columns 2 -p "Clipboard" | cliphist decode | wl-copy'),
   { description = "Clipboard history" })
+
+-- Wipe the history. Worth knowing about before you copy a password into it.
+bind("ALT + V", hl.dsp.exec_cmd("cliphist wipe && notify-send 'Clipboard' 'History cleared'"),
+  { description = "Clear clipboard history" })
+
+-- Emoji picker. `--action copy` rather than the default `type`: typing needs
+-- wtype and depends on the focused app accepting synthetic key events, which
+-- Electron apps often don't. Copying always works; paste with Ctrl+V.
+bind("ALT + E", hl.dsp.exec_cmd("rofimoji --action copy --skin-tone neutral"),
+  { description = "Emoji picker" })
+
+-- Calculator. rofi-calc is a plugin, so the mode is passed explicitly rather
+-- than listed in config.rasi — rofi warns on every launch about modes it
+-- can't find, and that noise is what made the launcher look broken before.
+-- Type an expression, Return copies the result.
+bind("ALT + C",
+  hl.dsp.exec_cmd('rofi -show calc -modi calc -no-show-match -no-sort -calc-command "echo -n \'{result}\' | wl-copy"'),
+  { description = "Calculator" })
 
 -- Notification centre panel.
 bind("N", hl.dsp.exec_cmd("swaync-client -t -sw"), { description = "Notification centre" })

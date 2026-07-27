@@ -7,20 +7,44 @@
 # Every module is off unless listed here — keeping it fast and quiet.
 
 format = """
+$username\
+$hostname\
 $directory\
 $git_branch\
+$git_state\
 $git_status\
 $nodejs\
 $python\
 $rust\
 $golang\
-$cmd_duration\
+$jobs\
 $line_break\
 $character"""
+
+# The right-hand side carries what you look at *after* a command finishes:
+# how it exited and how long it took. Keeping it off the left means the cursor
+# always sits in the same column, whatever ran before.
+right_format = """$status$cmd_duration"""
 
 add_newline = true
 
 palette = "desktop"
+
+# Only shown when you are not yourself — after `su`, or as root. Silence the
+# rest of the time is the point: a prompt that always says "lucas@" is
+# telling you something you already know.
+[username]
+show_always = false
+style_user = "bold peach"
+style_root = "bold red"
+format = "[$user]($style) "
+
+# Same idea: the hostname only appears over SSH, where it matters.
+[hostname]
+ssh_only = true
+ssh_symbol = "󰢹 "
+style = "bold peach"
+format = "[$ssh_symbol$hostname]($style) "
 
 [directory]
 style = "bold blue"
@@ -30,6 +54,10 @@ truncate_to_repo = true
 truncation_symbol = "…/"
 read_only = " 󰌾"
 read_only_style = "red"
+
+[directory.substitutions]
+"~/HPI/projects" = "󰉋 proj"
+"~/.config" = " config"
 
 [git_branch]
 symbol = " "
@@ -75,7 +103,36 @@ format = "[$symbol($version )]($style)"
 [cmd_duration]
 min_time = 2000
 style = "overlay1"
-format = "[took $duration]($style) "
+format = "[  $duration]($style)"
+
+# The exit code of the last command, on the right, only when it failed.
+# Worth having explicitly: a red prompt arrow tells you *that* something
+# failed, this tells you what — 127 is "not found", 130 is Ctrl+C, 1 is
+# everything else.
+[status]
+disabled = false
+style = "red"
+symbol = "✘ "
+not_executable_symbol = "🚫 "
+not_found_symbol = "🔍 "
+sigint_symbol = "󰜺 "
+signal_symbol = "⚡ "
+format = "[$symbol$status]($style) "
+map_symbol = true
+pipestatus = true
+
+# A background job indicator, so `fg` is never a surprise.
+[jobs]
+symbol = "󰜎 "
+style = "yellow"
+number_threshold = 1
+format = "[$symbol$number]($style) "
+
+# Rebase, merge, bisect — states where the next command means something
+# different from usual and it is worth being reminded.
+[git_state]
+style = "bold peach"
+format = "\\([$state( $progress_current/$progress_total)]($style)\\) "
 
 [character]
 success_symbol = "[❯](mauve)"

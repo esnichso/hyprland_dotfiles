@@ -89,3 +89,18 @@ btop
 fastfetch
 mpv
 imv
+
+# Shell tooling
+# Each of these replaces something already installed with a better version of
+# it; fish's config.fish wires them up and works fine without any of them.
+fzf
+zoxide
+eza
+bat
+fd
+ripgrep
+
+# rofi plugins and helpers
+rofi-calc
+rofimoji
+libva-utils
