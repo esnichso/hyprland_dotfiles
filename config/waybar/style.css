@@ -119,10 +119,26 @@ window#waybar {
   min-width: 22px;
   padding: 0 4px;
   margin: 0 1px;
-  color: @overlay0;
+  color: @subtext0;
   background: transparent;
   border-radius: 8px;
   transition: color 160ms ease, background 160ms ease;
+}
+
+/* Workspaces 1–3 are drawn even when nothing is on them (see
+ * persistent-workspaces in config.jsonc), so there has to be a visible
+ * difference between "in use" and "there if you want it". Empty ones drop to
+ * the muted foreground: still legible, still clickable, obviously idle.
+ *
+ * This rule must stay *above* .active — an active workspace can also be
+ * empty, and the later rule wins. Reversed, switching to an empty workspace
+ * would paint muted text on the accent fill.
+ *
+ * Note the class name too: Hyprland's module emits `empty`. The old rule here
+ * styled `.occupied`, which is a Sway class — it parsed cleanly and did
+ * nothing, which is exactly why it went unnoticed. */
+#workspaces button.empty {
+  color: @overlay0;
 }
 
 #workspaces button:hover {
@@ -136,12 +152,6 @@ window#waybar {
   color: @crust;
   background: @accent;
   font-weight: 700;
-}
-
-/* A workspace with a window on it, but not focused — brighter than empty,
- * dimmer than active. */
-#workspaces button.occupied {
-  color: @subtext0;
 }
 
 #workspaces button.urgent {

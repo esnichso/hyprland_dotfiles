@@ -156,23 +156,59 @@
   margin-bottom: 8px;
 }
 
-trough {
+/* Scoped to `scale` on purpose.
+ *
+ * `trough` and `slider` are GTK node names, not classes, and a scrollbar is
+ * built from the same two nodes as a slider. Styling them unqualified made
+ * every scrollbar in the notification centre inherit the 14px slider width
+ * and the 8px trough — which is why the panel's scrollbar looked like a
+ * second column. */
+scale trough {
   background: @surface0;
   border-radius: 10px;
   min-height: 8px;
 }
 
-highlight {
+scale highlight {
   background: @accent;
   border-radius: 10px;
   min-height: 8px;
 }
 
-slider {
+scale slider {
   background: @accent;
   border-radius: 10px;
   min-width: 14px;
   min-height: 14px;
+}
+
+/* ------------------------------------------------------------ scrollbar */
+
+/* Thin and unobtrusive: the list is the content, the scrollbar is a hint.
+ * It widens on hover so it stays grabbable with the mouse. */
+scrollbar {
+  background: transparent;
+  border: none;
+}
+
+scrollbar trough {
+  background: transparent;
+  border: none;
+  min-width: 6px;
+  border-radius: 6px;
+}
+
+scrollbar slider {
+  background: alpha(@overlay0, 0.7);
+  border: none;
+  border-radius: 6px;
+  min-width: 6px;
+  min-height: 32px;
+}
+
+scrollbar slider:hover {
+  background: @overlay2;
+  min-width: 8px;
 }
 
 /* Shown when there is nothing to show. */

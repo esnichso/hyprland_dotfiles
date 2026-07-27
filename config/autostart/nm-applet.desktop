@@ -1,0 +1,19 @@
+[Desktop Entry]
+# Suppresses /etc/xdg/autostart/nm-applet.desktop.
+#
+# network-manager-applet ships a system-wide autostart entry, and uwsm honours
+# XDG autostart, so nm-applet put a second network icon in the tray next to
+# Waybar's own network module. Two icons for one thing, with different
+# behaviour on click.
+#
+# An entry with the same filename in ~/.config/autostart overrides the one in
+# /etc/xdg/autostart, and Hidden=true means "do not start this at all". This
+# is the supported way to do it — nothing under /etc is touched, so a package
+# update can't undo it and uninstalling network-manager-applet isn't required
+# (nm-connection-editor comes from the same package and is still wanted).
+#
+# To get the applet back, delete this file and log in again.
+Type=Application
+Name=Network Manager Applet
+Exec=nm-applet
+Hidden=true
