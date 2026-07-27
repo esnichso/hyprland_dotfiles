@@ -6,12 +6,20 @@
 // If rofi ever rejects this file after an update, `rofi -dump-config` prints
 // the current defaults in the format it expects.
 
+// The icon theme follows the colour theme (Papirus-Dark vs Papirus-Light),
+// so it is generated. It has to be its own file rather than a marked region
+// here: the setting belongs inside `configuration { }`, and a comment inside
+// a rasi block discards every declaration after it — markers included.
+@import "icons"
+
 configuration {
+  // `calc` is deliberately not listed here. rofi warns on every launch about
+  // a mode it can't find, so a plugin that might not be installed is passed
+  // explicitly with -modi on the one keybind that uses it instead.
   modes: "drun,run,window";
 
   // Icons make a visual grid far faster to scan than a list of names.
   show-icons: true;
-  icon-theme: "Papirus-Dark";
 
   // Ranking by how often you actually launch things beats alphabetical.
   drun-display-format: "{name}";

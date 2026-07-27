@@ -63,9 +63,11 @@ def main() -> int:
                 return True
         return any(has_star_default(dep, seen) for dep in imports_of(path))
 
-    # colors.rasi is the generated palette; config.rasi is rofi's settings file
-    # (a `configuration { }` block plus @theme). Neither is a theme itself.
-    NOT_THEMES = {"colors.rasi", "config.rasi"}
+    # Not themes, so the `* { }` rule doesn't apply to them:
+    #   colors.rasi   the generated palette
+    #   icons.rasi    the generated icon-theme setting
+    #   config.rasi   rofi's own settings (`configuration { }` plus @theme)
+    NOT_THEMES = {"colors.rasi", "icons.rasi", "config.rasi"}
 
     for path in themes:
         if path.name in NOT_THEMES:

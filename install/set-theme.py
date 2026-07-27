@@ -109,17 +109,36 @@ class Theme:
         """rgba(rrggbbaa) — Hyprland and hyprlang tools."""
         return f"rgba({self.bare(key)}{alpha})"
 
+    def dec(self, key_or_hex: str) -> str:
+        """r,g,b as decimals — KDE's kdeglobals format, which takes nothing else."""
+        h = (key_or_hex if key_or_hex.startswith("#") else self.hex(key_or_hex)).lstrip("#")
+        return f"{int(h[0:2], 16)},{int(h[2:4], 16)},{int(h[4:6], 16)}"
+
+    def role_dec(self, name: str) -> str:
+        return self.dec(self.role(name))
+
 
 # ---------------------------------------------------------------- writing
 
 
+DRY_RUN = False  # set by --check; see the note in write()
+
+
 def write(path: Path, content: str, results: list) -> None:
+    """Write, unless --check asked only for a comparison.
+
+    The DRY_RUN guard is not decoration. Without it `--check` wrote every file
+    it was supposed to be inspecting, so it reported drift once and silently
+    repaired it — meaning `check.sh` passed on the second run no matter what,
+    and rendering a theme with --check quietly swapped the live palette.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     old = path.read_text(encoding="utf-8") if path.exists() else None
     if old == content:
         results.append(("same", path))
         return
-    path.write_text(content, encoding="utf-8")
+    if not DRY_RUN:
+        path.write_text(content, encoding="utf-8")
     results.append(("wrote", path))
 
 
@@ -143,7 +162,8 @@ def replace_marked(path: Path, block: str, comment: str, results: list) -> None:
     if new == text:
         results.append(("same", path))
         return
-    path.write_text(new, encoding="utf-8")
+    if not DRY_RUN:
+        path.write_text(new, encoding="utf-8")
     results.append(("wrote", path))
 
 
@@ -430,10 +450,177 @@ def gen_gtk3_theme(t: Theme) -> str:
     ])
 
 
+def gen_gtk3_css(t: Theme) -> str:
+    """GTK3 colour overrides.
+
+    ~/.config/gtk-3.0/gtk.css is loaded after the theme, at a higher priority,
+    so redefining the named colours Adwaita builds on repaints most widgets
+    without a packaged theme existing for this palette. It is a tint, not a
+    theme: widget shapes stay Adwaita's. A theme that names a real
+    `gtk_theme` gets that instead and this only nudges the edges.
+    """
+    def c(key: str) -> str:
+        return t.hex(key)
+
+    return "\n".join([
+        f"/* {BANNER.format(name=t.stem)} */",
+        f"/* Theme: {t.name} */",
+        "",
+        "@define-color theme_bg_color " + c("base") + ";",
+        "@define-color theme_base_color " + c("mantle") + ";",
+        "@define-color theme_fg_color " + c("text") + ";",
+        "@define-color theme_text_color " + c("text") + ";",
+        "@define-color theme_selected_bg_color " + t.role("accent") + ";",
+        "@define-color theme_selected_fg_color " + c("crust") + ";",
+        "",
+        "@define-color theme_unfocused_bg_color " + c("base") + ";",
+        "@define-color theme_unfocused_base_color " + c("mantle") + ";",
+        "@define-color theme_unfocused_fg_color " + c("subtext1") + ";",
+        "@define-color theme_unfocused_text_color " + c("text") + ";",
+        "@define-color theme_unfocused_selected_bg_color " + c("surface1") + ";",
+        "@define-color theme_unfocused_selected_fg_color " + c("text") + ";",
+        "",
+        "@define-color insensitive_bg_color " + c("mantle") + ";",
+        "@define-color insensitive_fg_color " + c("overlay0") + ";",
+        "@define-color insensitive_base_color " + c("base") + ";",
+        "",
+        "@define-color borders " + c("surface1") + ";",
+        "@define-color unfocused_borders " + c("surface0") + ";",
+        "",
+        "@define-color warning_color " + t.role("warning") + ";",
+        "@define-color error_color " + t.role("urgent") + ";",
+        "@define-color success_color " + t.role("success") + ";",
+        "@define-color link_color " + t.role("link") + ";",
+        "",
+        "@define-color wm_bg " + c("mantle") + ";",
+        "@define-color headerbar_bg_color " + c("mantle") + ";",
+        "@define-color headerbar_fg_color " + c("text") + ";",
+        "@define-color popover_bg_color " + c("surface0") + ";",
+        "@define-color popover_fg_color " + c("text") + ";",
+        "@define-color sidebar_bg_color " + c("mantle") + ";",
+        "@define-color sidebar_fg_color " + c("text") + ";",
+        "@define-color card_bg_color " + c("surface0") + ";",
+    ]) + "\n"
+
+
+def gen_kdeglobals(t: Theme) -> str:
+    """KDE's colour scheme, for Dolphin, Ark, Okular and anything else on KF6.
+
+    KF6 applications build their palette from KColorScheme, which reads this
+    file, *not* from qt6ct. That is why Dolphin stayed Breeze Light while
+    every other Qt app followed the theme: nothing had ever written a
+    kdeglobals for it to read.
+
+    Colours here are `r,g,b` decimals. KDE accepts no other notation — a hex
+    string is read as 0,0,0.
+    """
+    def group(name: str, bg: str, alt: str, fg: str) -> list[str]:
+        return [
+            f"[Colors:{name}]",
+            f"BackgroundNormal={t.dec(bg)}",
+            f"BackgroundAlternate={t.dec(alt)}",
+            f"ForegroundNormal={t.dec(fg)}",
+            f"ForegroundInactive={t.dec('overlay1')}",
+            f"ForegroundActive={t.role_dec('accent')}",
+            f"ForegroundLink={t.role_dec('link')}",
+            f"ForegroundVisited={t.dec('mauve')}",
+            f"ForegroundNegative={t.role_dec('urgent')}",
+            f"ForegroundNeutral={t.role_dec('warning')}",
+            f"ForegroundPositive={t.role_dec('success')}",
+            f"DecorationFocus={t.role_dec('accent')}",
+            f"DecorationHover={t.role_dec('accent')}",
+            "",
+        ]
+
+    lines = [
+        f"# {BANNER.format(name=t.stem)}",
+        f"# Theme: {t.name}",
+        "",
+        "[General]",
+        f"ColorScheme={t.name}",
+        f"Name={t.name}",
+        "shadeSortColumn=true",
+        f"font=Inter,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+        f"fixed=JetBrainsMono Nerd Font,11,-1,5,400,0,0,0,0,0,0,0,0,0,0,1",
+        "",
+        "[Icons]",
+        f"Theme={t.icon_theme}",
+        "",
+        "[KDE]",
+        "widgetStyle=Fusion",
+        "SingleClick=false",
+        "",
+    ]
+    lines += group("Window", "base", "mantle", "text")
+    lines += group("View", "mantle", "base", "text")
+    lines += group("Button", "surface0", "surface1", "text")
+    lines += group("Tooltip", "surface0", "surface1", "text")
+    lines += group("Complementary", "crust", "mantle", "text")
+    lines += group("Header", "mantle", "base", "text")
+
+    # Selection is the one group whose foreground must contrast with the
+    # accent rather than with the background.
+    lines += [
+        "[Colors:Selection]",
+        f"BackgroundNormal={t.role_dec('accent')}",
+        f"BackgroundAlternate={t.role_dec('accent_alt')}",
+        f"ForegroundNormal={t.dec('crust')}",
+        f"ForegroundInactive={t.dec('crust')}",
+        f"ForegroundActive={t.dec('crust')}",
+        f"ForegroundLink={t.dec('crust')}",
+        f"ForegroundVisited={t.dec('crust')}",
+        f"ForegroundNegative={t.dec('crust')}",
+        f"ForegroundNeutral={t.dec('crust')}",
+        f"ForegroundPositive={t.dec('crust')}",
+        f"DecorationFocus={t.role_dec('accent')}",
+        f"DecorationHover={t.role_dec('accent')}",
+        "",
+        "[WM]",
+        f"activeBackground={t.dec('mantle')}",
+        f"activeForeground={t.dec('text')}",
+        f"inactiveBackground={t.dec('base')}",
+        f"inactiveForeground={t.dec('subtext0')}",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def gen_rofi_icons(t: Theme) -> str:
+    return "\n".join([
+        f"// {BANNER.format(name=t.stem)}",
+        f"// Theme: {t.name}",
+        "",
+        "configuration {",
+        f'  icon-theme: "{t.icon_theme}";',
+        "}",
+    ]) + "\n"
+
+
+def gen_theme_env(t: Theme) -> str:
+    """The handful of values scripts need, as shell assignments.
+
+    theme.sh used to hardcode Mocha's GTK and icon theme names, so picking a
+    different theme changed thirteen files and then told gsettings to keep
+    using the old one. It sources this instead.
+    """
+    return "\n".join([
+        f"# {BANNER.format(name=t.stem)}",
+        "#",
+        "# Sourced by config/hypr/scripts/theme.sh. Shell syntax, no logic.",
+        "",
+        f"THEME_NAME={t.stem}",
+        f"THEME_LABEL='{t.name}'",
+        f"THEME_DARK={'1' if t.dark else '0'}",
+        f"GTK_THEME_NAME='{t.gtk_theme}'",
+        f"ICON_THEME_NAME='{t.icon_theme}'",
+    ]) + "\n"
+
+
 # ------------------------------------------------------------------- main
 
 
 def apply(t: Theme, check: bool) -> int:
+    global DRY_RUN
+    DRY_RUN = check
     results: list = []
 
     write(CONFIG / "hypr/conf/theme.lua", gen_hypr_theme_lua(t), results)
@@ -444,12 +631,21 @@ def apply(t: Theme, check: bool) -> int:
     write(CONFIG / "rofi/colors.rasi", gen_rofi_colors(t), results)
     write(CONFIG / "fish/colors.fish", gen_fish_colors(t), results)
     write(CONFIG / "gtk-4.0/gtk.css", gen_gtk4_css(t), results)
+    write(CONFIG / "gtk-3.0/gtk.css", gen_gtk3_css(t), results)
     write(CONFIG / "qt6ct/colors/palette.conf", gen_qt_palette(t), results)
     write(CONFIG / "qt5ct/colors/palette.conf", gen_qt_palette(t), results)
+    write(CONFIG / "kdeglobals", gen_kdeglobals(t), results)
+    write(CONFIG / "hypr/theme.env", gen_theme_env(t), results)
+    # A file of its own rather than a marked region: the icon-theme setting
+    # lives inside rofi's `configuration { }` block, and a comment inside a
+    # rasi block discards every declaration after it — markers included.
+    write(CONFIG / "rofi/icons.rasi", gen_rofi_icons(t), results)
 
     replace_marked(CONFIG / "starship.toml", gen_starship_palette(t), "#", results)
     replace_marked(CONFIG / "waybar/config.jsonc", gen_waybar_calendar(t), "//", results)
     replace_marked(CONFIG / "gtk-3.0/settings.ini", gen_gtk3_theme(t), "#", results)
+    replace_marked(CONFIG / "qt6ct/qt6ct.conf", f"icon_theme={t.icon_theme}", ";", results)
+    replace_marked(CONFIG / "qt5ct/qt5ct.conf", f"icon_theme={t.icon_theme}", ";", results)
 
     # Record which theme is live, so scripts and prompts can ask.
     state = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "hypr"

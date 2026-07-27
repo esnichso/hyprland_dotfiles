@@ -65,7 +65,8 @@ except Exception as e:
     sys.exit(0)
 
 failed = False
-for path in ["config/waybar/style.css", "config/swaync/style.css"]:
+for path in ["config/waybar/style.css", "config/swaync/style.css",
+             "config/gtk-3.0/gtk.css", "config/gtk-4.0/gtk.css"]:
     errors = []
     provider = Gtk.CssProvider()
     provider.connect("parsing-error",
@@ -95,6 +96,24 @@ if [[ -f config/starship.toml ]]; then
 		bad "config/starship.toml"
 	fi
 fi
+
+say "Themes"
+# Every theme must parse and fill every slot, not just the one that happens to
+# be applied. A theme with a missing colour only fails when you switch to it,
+# which is the worst moment to find out.
+for theme in themes/*.toml; do
+	name="$(basename "$theme" .toml)"
+	if err="$(./install/set-theme.py "$name" --check 2>&1 >/dev/null)"; then
+		ok "$theme"
+	elif [[ -z $err ]]; then
+		# Non-zero with no stderr just means "would rewrite files", which is
+		# expected for every theme that isn't the current one.
+		ok "$theme"
+	else
+		bad "$theme"
+		printf '%s\n' "$err" | sed 's/^/        /'
+	fi
+done
 
 say "Shell"
 while IFS= read -r f; do
