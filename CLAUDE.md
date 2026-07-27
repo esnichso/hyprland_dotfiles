@@ -178,6 +178,18 @@ this — `require`'s built-in error isolation does *not* cover module lookup, an
 without the guard a missing file drops the session into emergency mode with no
 binds at all.
 
+**fastfetch has no responsive mode**, and it does not degrade gracefully.
+Verified against upstream's JSON schema: a module's `condition` tests only
+`system`, `arch` and `succeeded`, and `display` has no width option. Worse,
+`display.disableLinewrap` defaults to **true** — fastfetch tells the terminal
+to stop wrapping while it draws, so an over-wide line is *clipped* at the right
+margin rather than wrapped. That is correct beside a logo (a wrapped line would
+run under the art) and wrong without one. Hence three configs in
+`config/fastfetch/` and a fish function that picks by `$COLUMNS`. The
+thresholds are measured, not chosen: the built-in `cachyos` art is 54 columns,
+`cachyos_small` is 24. Only the fish path is width-aware — bash and a TTY get
+`config.jsonc`, the wide one.
+
 **hyprpaper rotates by default.** With a directory as `path` it cycles on
 `timeout`, default 30 seconds. The user explicitly does not want automatic
 changes: `hyprpaper.conf` declares no wallpaper at all, and

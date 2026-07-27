@@ -182,7 +182,7 @@ which point it needs rebuilding — which is why it isn't the default here.
 | `starship` | extra | 1.26.0 | Prompt — one TOML file, works in any shell if you ever switch. |
 | `kitty` | extra | 0.48.1 | Terminal. |
 | `btop` | extra | 1.4.7 | System monitor — your existing config carries over too. |
-| `fastfetch` | extra | 2.66.0 | System info. |
+| `fastfetch` | extra | 2.66.0 | System info. Three layouts in `config/fastfetch/`; the fish function picks by terminal width, because fastfetch itself has none. |
 | `mpv` | extra | 0.41.0 | Video player. |
 | `imv` | extra | 5.0.1 | Wayland-native image viewer. |
 

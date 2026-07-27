@@ -38,7 +38,7 @@ else
 fi
 
 say "JSON / JSONC"
-for f in config/waybar/config.jsonc config/swaync/config.json; do
+for f in config/waybar/config.jsonc config/swaync/config.json config/fastfetch/*.jsonc; do
 	[[ -f $f ]] || continue
 	if python3 - "$f" <<'PY'; then ok "$f"; else bad "$f"; fi
 import json, re, sys
@@ -83,6 +83,39 @@ for path in ["config/waybar/style.css", "config/swaync/style.css",
         print(f"  \033[31mFAIL\033[0m  {path}")
         for e in errors:
             print(f"        {e}")
+    else:
+        print(f"  \033[32mOK\033[0m    {path}")
+sys.exit(1 if failed else 0)
+PY
+
+say "fastfetch configs"
+# Valid JSON is not enough here. fastfetch silently ignores nothing — a
+# misspelled module type or format key is a hard error at runtime, and the
+# only symptom is a fetch that refuses to run in one terminal size. Validating
+# against upstream's own schema (docs/fastfetch/json_schema.json) checks every
+# module name, option and format placeholder without fastfetch being installed.
+if python3 - <<'PY'; then :; else FAIL=1; fi
+import json, re, sys
+try:
+    import jsonschema
+except ImportError:
+    print("  jsonschema not available — skipping (install: pacman -S python-jsonschema)")
+    sys.exit(0)
+
+schema = json.load(open("docs/fastfetch/json_schema.json", encoding="utf-8"))
+schema.pop("$schema", None)          # the meta-schema URL, not fetchable offline
+validator = jsonschema.Draft7Validator(schema)
+
+import glob
+failed = False
+for path in sorted(glob.glob("config/fastfetch/*.jsonc")):
+    raw = re.sub(r'(?m)^\s*//.*$', '', open(path, encoding="utf-8").read())
+    errors = sorted(validator.iter_errors(json.loads(raw)), key=lambda e: list(e.path))
+    if errors:
+        failed = True
+        print(f"  \033[31mFAIL\033[0m  {path}")
+        for e in errors[:10]:
+            print(f"        {list(e.path)}: {e.message[:200]}")
     else:
         print(f"  \033[32mOK\033[0m    {path}")
 sys.exit(1 if failed else 0)

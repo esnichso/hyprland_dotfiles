@@ -17,6 +17,7 @@ maintained rather than copied.
 | `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`, `set-theme.py`. |
 | `themes/` | One TOML palette per theme — the single source of colour. |
 | `docs/hyprland/` | Snapshot of the official wiki (38 pages + upstream example config, 2026-07-26). |
+| `docs/fastfetch/` | Upstream's JSON schema, so `check.sh` can validate the fastfetch configs offline. |
 
 ```
 config/
@@ -39,8 +40,9 @@ config/
 ├── kitty/                  font, palette, background_opacity
 ├── gtk-3.0/, gtk-4.0/      GTK + libadwaita theming
 ├── qt5ct/, qt6ct/          Qt palette, so Dolphin matches
-├── fish/                   shell config
+├── fish/                   shell config + functions/
 ├── starship.toml           prompt
+├── fastfetch/              three layouts, picked by terminal width
 ├── waybar/                 config.jsonc + style.css
 ├── rofi/                   launcher + power menu themes
 └── swaync/                 config.json + style.css + NOTES.md
@@ -95,10 +97,17 @@ edit.
 ./install/check.sh
 ```
 
-Validates Lua, JSONC, GTK CSS, TOML, every theme, the rofi themes and the shell
-scripts, and looks for duplicate keybinds. The CSS check uses GTK's own parser —
-worth having, because GTK rejects an entire stylesheet over one unknown
-pseudo-class and the only symptom is an unstyled bar.
+Validates Lua, JSONC, GTK CSS, TOML, every theme, the rofi themes, the fastfetch
+configs and the shell scripts, and looks for duplicate keybinds. Two of the
+checks use the real parser rather than an approximation: GTK CSS goes through
+GTK itself, because GTK rejects an entire stylesheet over one unknown
+pseudo-class and the only symptom is an unstyled bar; the fastfetch configs go
+through upstream's JSON schema, which catches a misspelled module or format
+placeholder that plain JSON validation would wave through.
+
+Both are optional dependencies and both **skip silently** if missing, so green
+on a fresh machine does not mean checked: `python-gobject` for the CSS,
+`python-jsonschema` for fastfetch.
 
 ## Checking a running session
 
