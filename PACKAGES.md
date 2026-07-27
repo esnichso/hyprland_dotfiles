@@ -38,6 +38,7 @@ no file pickers, no password prompts, freezing apps).
 | `pipewire-jack` | extra | 1.6.8 | JACK compatibility. |
 | `wireplumber` | extra | 0.5.15 | PipeWire session manager. **Not** `pipewire-media-session` (deprecated). |
 | `sddm` | extra | 0.21.0 | Display manager. ≥0.20 avoids the 90s-shutdown bug; the Hyprland wiki rates it "works flawlessly". |
+| `catppuccin-sddm-theme-*` | AUR | 1.1.2 | Login screen. One package per flavour, each shipping all 14 accent variants. Applied by `install/sddm.sh`. |
 | `xdg-user-dirs` | extra | 0.20 | Creates ~/Downloads, ~/Pictures etc. that other tools assume exist. |
 | `gnome-keyring` | extra | 50.0 | Secret storage — SSH keys, app logins. |
 | `libsecret` | core | 0.21.7 | Client library for the above. |

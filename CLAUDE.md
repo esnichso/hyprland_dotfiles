@@ -178,6 +178,24 @@ this — `require`'s built-in error isolation does *not* cover module lookup, an
 without the guard a missing file drops the session into emergency mode with no
 binds at all.
 
+**The login screen is not the lock screen, and neither is `link.sh`'s
+problem.** hyprlock (`SUPER+L`, and after idle) is fully themed and generated
+from `themes/*.toml`. SDDM — what you see after booting and after `SUPER+M` →
+logout — is a different program entirely: it runs as the `sddm` system user on
+its own VT *before* any user session exists, so it never reads `~/.config`,
+`hyprctl reload` means nothing to it, and no symlink `link.sh` makes is
+visible. Its config is root-owned `/etc/sddm.conf.d/`, its themes
+`/usr/share/sddm/themes/`. That is why `install/sddm.sh` is a separate,
+sudo-requiring step, and why **`SUPER+ALT+T` cannot restyle the login screen**.
+
+Two things that make it survivable: SDDM reads `<theme>/theme.conf.user` and
+lets its non-empty keys override the theme's own `theme.conf`
+(`ThemeConfig::setTo`), so overrides survive a package update — never edit
+`theme.conf`. And a theme that fails to load falls back to SDDM's embedded one
+rather than to a black screen (`GreeterApp.cpp`), so a bad theme is ugly, not
+locking. Preview without logging out:
+`sddm-greeter-qt6 --test-mode --theme <dir>`.
+
 **fastfetch's `key.width` truncates, and an empty `keyIcon` is not "no
 override".** `"keyIcon": ""` *replaces* the built-in glyph with nothing while
 still costing its two columns inside `key.width` — so `width: 13` rendered

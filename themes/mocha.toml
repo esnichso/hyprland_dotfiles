@@ -18,6 +18,11 @@ dark = true
 gtk_theme = "catppuccin-mocha-mauve-standard+default"
 icon_theme = "Papirus-Dark"
 
+# Login screen (SDDM). Applied by install/sddm.sh, which needs root — this
+# is only the name. Same flavour, same accent.
+# Requires the matching AUR package; see install/packages-aur.txt.
+sddm_theme = "catppuccin-mocha-mauve"
+
 [palette]
 # Backgrounds, darkest first.
 crust    = "#11111b"

@@ -62,6 +62,11 @@ class Theme:
         self.dark = raw.get("dark", True)
         self.gtk_theme = raw.get("gtk_theme", "")
         self.icon_theme = raw.get("icon_theme", "Papirus-Dark")
+        # Login screen. Not applied by this script — /etc is root-owned and
+        # SDDM runs before there is a user session to apply anything to. This
+        # only records which theme *would* match; install/sddm.sh reads it and
+        # asks for the password once.
+        self.sddm_theme = raw.get("sddm_theme", "")
         self.palette: dict[str, str] = raw["palette"]
         self.roles: dict[str, str] = raw["roles"]
         self.ansi: dict[str, str] = raw.get("ansi", {})
@@ -612,6 +617,7 @@ def gen_theme_env(t: Theme) -> str:
         f"THEME_DARK={'1' if t.dark else '0'}",
         f"GTK_THEME_NAME='{t.gtk_theme}'",
         f"ICON_THEME_NAME='{t.icon_theme}'",
+        f"SDDM_THEME_NAME='{t.sddm_theme}'",
     ]) + "\n"
 
 

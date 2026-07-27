@@ -20,3 +20,19 @@ bibata-cursor-theme-bin
 catppuccin-gtk-theme-frappe
 catppuccin-gtk-theme-macchiato
 catppuccin-gtk-theme-latte
+
+# Login screen. SDDM's own default is a grey Qt form on a plain background —
+# not "left over from a previous setup", just what SDDM ships.
+#
+# One package ships all fourteen accent variants of a flavour, so
+# catppuccin-sddm-theme-mocha provides catppuccin-mocha-mauve,
+# catppuccin-mocha-blue, catppuccin-mocha-peach and so on. Which one is used
+# is the `sddm_theme` key in themes/*.toml; install/sddm.sh applies it.
+#
+# Mocha alone covers every theme in themes/ except frappe, macchiato and
+# latte, which map to their own flavours. Skip those three if you only ever
+# use Mocha.
+catppuccin-sddm-theme-mocha
+catppuccin-sddm-theme-frappe
+catppuccin-sddm-theme-macchiato
+catppuccin-sddm-theme-latte

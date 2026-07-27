@@ -259,6 +259,16 @@ network yet — you'd otherwise be stuck with no config and no way to fetch it.
 
 At the SDDM login screen pick **Hyprland (uwsm-managed)**.
 
+The login screen itself is still SDDM's default at this point — a grey Qt form
+on a plain background. It is deliberately not themed by `link.sh`: SDDM runs as
+its own system user before login and reads root-owned `/etc/sddm.conf.d/`, so
+it needs one password-requiring step of its own.
+
+```bash
+./install/sddm.sh --dry-run   # read what it would write
+./install/sddm.sh             # apply
+```
+
 ## Phase 4 — First login checklist
 
 Work down the list. Anything that fails, tell me and I'll fix it in the repo.
@@ -279,6 +289,11 @@ Work down the list. Anything that fails, tell me and I'll fix it in the repo.
 - [ ] Touchpad: two-finger scroll, tap-to-click, gestures
 - [ ] Lid close suspends; reopening resumes to the lock screen
 - [ ] `vainfo` lists Intel entrypoints (hardware video decode alive)
+
+**Looks**
+- [ ] Login screen is themed, with the same cursor as the desktop (`./install/sddm.sh`)
+- [ ] `SUPER + L` locks, and hyprlock's clock and password field are themed
+- [ ] `SUPER + ALT + T` switches theme; remember the login screen needs a re-run
 
 **Desktop plumbing**
 - [ ] Screenshot keybind captures and opens satty

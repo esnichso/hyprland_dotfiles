@@ -14,7 +14,7 @@ maintained rather than copied.
 | [PLAN.md](PLAN.md) | Fix lists from the VM rounds, and what each change was for. |
 | [CLAUDE.md](CLAUDE.md) | How the repo works, the workflow, and the gotchas worth knowing before editing. |
 | `config/` | The actual configuration, symlinked into `~/.config`. |
-| `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`, `set-theme.py`. |
+| `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`, `doctor.sh`, `sddm.sh`, `set-theme.py`. |
 | `themes/` | One TOML palette per theme — the single source of colour. |
 | `docs/hyprland/` | Snapshot of the official wiki (38 pages + upstream example config, 2026-07-26). |
 | `docs/fastfetch/` | Upstream's JSON schema, so `check.sh` can validate the fastfetch configs offline. |
@@ -123,6 +123,27 @@ It reports on the session, PipeWire, the portals (screenshare and file
 pickers), clipboard watchers, the notification daemon, fonts, whether the GTK
 theme it's been told to use is installed at all, and hardware video
 acceleration. It changes nothing.
+
+## The login screen
+
+SDDM is the one part of this that a theme switch cannot reach. It runs as the
+`sddm` system user before you log in, so it never sees `~/.config`, and its
+config lives in root-owned `/etc/sddm.conf.d/`. Every other file here is
+written without a password; this one needs one.
+
+```bash
+./install/sddm.sh --dry-run   # show exactly what would be written
+./install/sddm.sh             # apply (asks for sudo)
+./install/sddm.sh --show      # what's configured now, and which themes exist
+```
+
+It takes the theme name from `sddm_theme` in `themes/*.toml`, and matches the
+greeter's font and cursor to the desktop's — a stock X11 pointer over a themed
+greeter is the most obvious "unthemed" tell there is. Tokyo Night and Gruvbox
+have no SDDM theme of their own, so they borrow the nearest Catppuccin accent.
+
+**Re-run it after switching themes.** `SUPER+ALT+T` restyles the desktop; it
+cannot restyle the login screen.
 
 ## Decisions
 
