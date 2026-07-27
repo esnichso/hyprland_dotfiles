@@ -10,7 +10,15 @@
 # Nothing here changes anything. Every line is a question and an answer.
 # Read it top to bottom; the summary at the end counts the failures.
 
-set -uo pipefail
+# Deliberately NOT pipefail.
+#
+# Almost every check here is `something | grep -q`. grep -q exits the moment
+# it matches, the writer gets SIGPIPE and exits 141, and under pipefail the
+# pipeline reports 141 — so a *successful* match reads as a failure. It only
+# bites when the writer produces more than a pipe buffer, which is why
+# `fc-list | grep -q` reported every font missing while `busctl | grep -q`
+# looked fine.
+set -u
 
 GREEN=$'\033[32m' YELLOW=$'\033[33m' RED=$'\033[31m'
 BOLD=$'\033[1m' DIM=$'\033[2m' RESET=$'\033[0m'
@@ -54,11 +62,14 @@ for var in XDG_CURRENT_DESKTOP XDG_SESSION_TYPE XDG_RUNTIME_DIR; do
 	fi
 done
 
-if systemctl --user is-active --quiet wayland-wm@hyprland.service 2>/dev/null; then
+if systemctl --user is-active --quiet wayland-wm@hyprland.service 2>/dev/null ||
+	systemctl --user is-active --quiet 'wayland-wm@*.service' 2>/dev/null; then
 	ok "Started through uwsm"
 else
-	warn "Not started through uwsm" \
-		"Launch Hyprland from SDDM's 'Hyprland (uwsm)' entry."
+	warn "Not started through uwsm (or the unit is named differently)" \
+		"Check with: systemctl --user list-units 'wayland-wm@*'"
+	note "Without uwsm, ~/.config/uwsm/env is never read — cursor theme,"
+	note "QT_QPA_PLATFORMTHEME and LIBVA_DRIVER_NAME would all be unset."
 fi
 
 # ------------------------------------------------------------------ audio
@@ -105,32 +116,41 @@ running swayosd-server && ok "swayosd-server running (volume/brightness popups)"
 
 section "Portals (screenshare, file pickers, global shortcuts)"
 
-if running xdg-desktop-portal; then
-	ok "xdg-desktop-portal running"
-else
-	bad "xdg-desktop-portal is not running" \
-		"Screensharing and GTK file dialogs will silently do nothing."
-fi
-
-running xdg-desktop-portal-hyprland && ok "xdg-desktop-portal-hyprland running (screencast)" ||
-	bad "xdg-desktop-portal-hyprland is not running" \
-		"systemctl --user status xdg-desktop-portal-hyprland"
-
-running xdg-desktop-portal-gtk && ok "xdg-desktop-portal-gtk running (file chooser)" ||
-	warn "xdg-desktop-portal-gtk is not running" \
-		"It starts on demand; this is only a problem if file dialogs fail."
-
+# Portals are D-Bus activated. They are not running until something asks for
+# one, so "is the process alive" answers the wrong question — a portal that
+# has never been needed is idle, not broken. Asking on D-Bus is both the real
+# test and what an application would do, so that comes first and is what the
+# verdict is based on.
 if have busctl; then
-	if busctl --user introspect org.freedesktop.portal.Desktop \
-		/org/freedesktop/portal/desktop 2>/dev/null |
-		grep -q 'org.freedesktop.portal.ScreenCast'; then
-		ok "ScreenCast interface answers on D-Bus"
-		note "Real test: share a window in a browser — the picker should appear."
+	iface=$(busctl --user introspect org.freedesktop.portal.Desktop \
+		/org/freedesktop/portal/desktop 2>/dev/null)
+	if [[ -z $iface ]]; then
+		bad "xdg-desktop-portal does not answer on D-Bus" \
+			"Screensharing and GTK file dialogs will silently do nothing."
 	else
-		bad "ScreenCast interface is not exported" \
-			"The portal is up but has no screencast backend."
+		ok "xdg-desktop-portal answers on D-Bus"
+		if grep -q 'org.freedesktop.portal.ScreenCast' <<<"$iface"; then
+			ok "ScreenCast interface exported (screensharing)"
+			note "Real test: share a window in a browser — the picker should appear."
+		else
+			bad "ScreenCast interface is not exported" \
+				"The portal is up but has no screencast backend."
+		fi
+		if grep -q 'org.freedesktop.portal.FileChooser' <<<"$iface"; then
+			ok "FileChooser interface exported (open/save dialogs)"
+		else
+			bad "FileChooser interface is not exported" \
+				"xdg-desktop-portal-gtk provides this; XDPH has no file picker."
+		fi
 	fi
+else
+	warn "busctl not available" "Cannot test the portals properly."
 fi
+
+# Informational only, for the same reason: idle is a normal state here.
+for p in xdg-desktop-portal xdg-desktop-portal-hyprland xdg-desktop-portal-gtk; do
+	running "$p" && note "$p is running" || note "$p is idle (starts on demand)"
+done
 
 if [[ -r ~/.config/xdg-desktop-portal/hyprland-portals.conf ||
 	-r /usr/share/xdg-desktop-portal/hyprland-portals.conf ]]; then
@@ -238,13 +258,19 @@ fi
 
 section "Fonts"
 
-for font in "Inter" "JetBrainsMono Nerd Font" "Noto Color Emoji" "Font Awesome"; do
-	if fc-list 2>/dev/null | grep -qi "$font"; then
-		ok "$font"
-	else
-		bad "$font is missing" "Glyphs will fall back to boxes in the bar or menus."
-	fi
-done
+# Listed once and matched in memory, rather than re-running fc-list per font.
+installed_fonts=$(fc-list 2>/dev/null)
+if [[ -z $installed_fonts ]]; then
+	bad "fc-list returned nothing" "fontconfig is broken or not installed."
+else
+	for font in "Inter" "JetBrainsMono Nerd Font" "Noto Color Emoji" "Font Awesome"; do
+		if grep -qi -- "$font" <<<"$installed_fonts"; then
+			ok "$font"
+		else
+			bad "$font is missing" "Glyphs will fall back to boxes in the bar or menus."
+		fi
+	done
+fi
 
 # -------------------------------------------------------------- hardware
 
