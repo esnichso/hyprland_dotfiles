@@ -16,6 +16,7 @@ maintained rather than copied.
 | `config/` | The actual configuration, symlinked into `~/.config`. |
 | `install/` | Package lists, `bootstrap.sh`, `link.sh`, `check.sh`, `doctor.sh`, `sddm.sh`, `set-theme.py`. |
 | `themes/` | One TOML palette per theme — the single source of colour. |
+| `sddm/` | The login screen theme. Not under `config/` — SDDM never reads a home directory. |
 | `docs/hyprland/` | Snapshot of the official wiki (38 pages + upstream example config, 2026-07-26). |
 | `docs/fastfetch/` | Upstream's JSON schema, so `check.sh` can validate the fastfetch configs offline. |
 
@@ -46,6 +47,11 @@ config/
 ├── waybar/                 config.jsonc + style.css
 ├── rofi/                   launcher + power menu themes
 └── swaync/                 config.json + style.css + NOTES.md
+
+sddm/hypersetup/
+├── Main.qml                hand-written, contains no colour
+├── metadata.desktop        tells SDDM which file to load
+└── theme.conf              generated — the palette Main.qml reads
 ```
 
 `kitty/` is now included — it sets the font, the Catppuccin palette and
@@ -72,7 +78,7 @@ generated two ways, depending on what each format supports:
 | Mechanism | Used for |
 | --- | --- |
 | A generated file the real config imports | waybar/swaync CSS (`@import`), kitty (`include`), rofi (`@import`), fish (`source`), hyprlock (`source`) |
-| A whole generated file | `kdeglobals` (KDE apps), `gtk-3.0/gtk.css`, `hypr/theme.env` (read by `scripts/theme.sh`) — the format has no user half worth preserving |
+| A whole generated file | `kdeglobals` (KDE apps), `gtk-3.0/gtk.css`, `hypr/theme.env` (read by `scripts/theme.sh`), `sddm/hypersetup/theme.conf` — the format has no user half worth preserving |
 | A marked region replaced in place | `starship.toml`, `waybar/config.jsonc`, `gtk-3.0/settings.ini`, `qt6ct.conf`, `qt5ct.conf` — no import mechanism exists |
 
 Generated files say so in their header. Edit `themes/*.toml`, never them —
@@ -126,24 +132,38 @@ acceleration. It changes nothing.
 
 ## The login screen
 
-SDDM is the one part of this that a theme switch cannot reach. It runs as the
-`sddm` system user before you log in, so it never sees `~/.config`, and its
-config lives in root-owned `/etc/sddm.conf.d/`. Every other file here is
-written without a password; this one needs one.
+The theme is ours: `sddm/hypersetup/`. Blank background in the current
+palette, big centred clock, session and power controls in the bottom corners.
+No AUR package — an SDDM theme is just a directory with a `Main.qml` and a
+`metadata.desktop`.
+
+`Main.qml` is hand-written and contains **no colour at all**. SDDM exposes
+every key of a theme's `theme.conf` on a global `config` object, so the palette
+arrives the same way it does for the CSS and rofi: a generated file the
+hand-written config reads. All six themes work, including Tokyo Night and
+Gruvbox, which have no packaged SDDM theme anywhere.
 
 ```bash
-./install/sddm.sh --dry-run   # show exactly what would be written
-./install/sddm.sh             # apply (asks for sudo)
-./install/sddm.sh --show      # what's configured now, and which themes exist
+./install/sddm.sh --dry-run   # show exactly what would be installed
+./install/sddm.sh             # install and apply (asks for sudo)
+./install/sddm.sh --show      # what's configured now
 ```
 
-It takes the theme name from `sddm_theme` in `themes/*.toml`, and matches the
-greeter's font and cursor to the desktop's — a stock X11 pointer over a themed
-greeter is the most obvious "unthemed" tell there is. Tokyo Night and Gruvbox
-have no SDDM theme of their own, so they borrow the nearest Catppuccin accent.
+SDDM is the one part of this a theme switch cannot reach. It runs as the
+`sddm` system user before you log in, so it never sees `~/.config`, and both
+`/etc/sddm.conf.d/` and `/usr/share/sddm/themes/` are root-owned. Every other
+file here is written without a password; this one needs one.
 
-**Re-run it after switching themes.** `SUPER+ALT+T` restyles the desktop; it
-cannot restyle the login screen.
+**Re-run it after switching themes.** `set-theme.py` regenerates
+`sddm/hypersetup/theme.conf`, but getting that into `/usr/share` needs sudo,
+so `SUPER+ALT+T` alone leaves the login screen on the old palette.
+
+Preview without logging out — and note that SDDM falls back to its embedded
+theme if ours fails to load, so a mistake here is ugly rather than locking:
+
+```bash
+sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/hypersetup
+```
 
 ## Decisions
 

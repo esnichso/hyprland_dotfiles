@@ -1,0 +1,18 @@
+[SddmGreeterTheme]
+Name=hypersetup
+Description=Blank colour, big clock. Generated from themes/*.toml.
+Author=hypersetup
+Type=sddm-theme
+Version=1.0
+Website=https://github.com/esnichso/hyprland_dotfiles
+License=MIT
+
+# The two that actually matter to SDDM: which file to load, and which file to
+# expose on the `config` object inside it.
+MainScript=Main.qml
+ConfigFile=theme.conf
+
+# Theme-API 2.0 is what a Qt6 greeter expects; the shipped Catppuccin theme
+# declares the same pair, which is where these were taken from.
+Theme-API=2.0
+QtVersion=6

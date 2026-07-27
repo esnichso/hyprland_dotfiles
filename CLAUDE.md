@@ -179,22 +179,31 @@ without the guard a missing file drops the session into emergency mode with no
 binds at all.
 
 **The login screen is not the lock screen, and neither is `link.sh`'s
-problem.** hyprlock (`SUPER+L`, and after idle) is fully themed and generated
-from `themes/*.toml`. SDDM — what you see after booting and after `SUPER+M` →
-logout — is a different program entirely: it runs as the `sddm` system user on
-its own VT *before* any user session exists, so it never reads `~/.config`,
-`hyprctl reload` means nothing to it, and no symlink `link.sh` makes is
-visible. Its config is root-owned `/etc/sddm.conf.d/`, its themes
-`/usr/share/sddm/themes/`. That is why `install/sddm.sh` is a separate,
-sudo-requiring step, and why **`SUPER+ALT+T` cannot restyle the login screen**.
+problem.** hyprlock (`SUPER+L`, and after idle) is themed and generated from
+`themes/*.toml`. SDDM — what you see after booting and after `SUPER+M` →
+logout — is a different program: it runs as the `sddm` system user on its own
+VT *before* any user session exists, so it never reads `~/.config`, `hyprctl
+reload` means nothing to it, and no symlink `link.sh` makes is visible. Its
+config is root-owned `/etc/sddm.conf.d/`, its themes `/usr/share/sddm/themes/`.
+Hence `install/sddm.sh` as a separate sudo step, and hence **`SUPER+ALT+T`
+cannot restyle the login screen**.
 
-Two things that make it survivable: SDDM reads `<theme>/theme.conf.user` and
-lets its non-empty keys override the theme's own `theme.conf`
-(`ThemeConfig::setTo`), so overrides survive a package update — never edit
-`theme.conf`. And a theme that fails to load falls back to SDDM's embedded one
-rather than to a black screen (`GreeterApp.cpp`), so a bad theme is ugly, not
-locking. Preview without logging out:
-`sddm-greeter-qt6 --test-mode --theme <dir>`.
+The theme is ours (`sddm/hypersetup/`), which is only possible because SDDM
+exposes every key of a theme's `theme.conf` on a global `config` object inside
+the QML — so `Main.qml` stays hand-written and colour-free while
+`set-theme.py` generates the palette. Two traps in that: `config` values are
+**always strings**, so `config.ClockScale` is `"0.13"` and arithmetic on it
+concatenates rather than adds; and a key Main.qml reads but theme.conf does
+not define resolves to an empty string, giving black text on a black
+background with no error anywhere. `check.sh` cross-checks the two files for
+exactly that.
+
+Do not copy an SDDM theme in as a symlink into `$HOME`: the greeter runs as
+`sddm` and cannot traverse a 700 home directory. `install/sddm.sh` copies.
+
+A mistake here is survivable — SDDM falls back to its embedded theme when a
+theme fails to load (`GreeterApp.cpp`), so a broken theme is ugly rather than
+locking. Preview with `sddm-greeter-qt6 --test-mode --theme <dir>`.
 
 **fastfetch's `key.width` truncates, and an empty `keyIcon` is not "no
 override".** `"keyIcon": ""` *replaces* the built-in glyph with nothing while
@@ -257,6 +266,16 @@ because it manufactures the green result it is asked for.
 
 Both bugs are the same mistake: trusting an operation's report of itself
 instead of the state it left behind.
+
+**A tool on `$PATH` is not a tool that works.** `check.sh` grew a qmllint
+step for the SDDM theme; on the dev host `/usr/bin/qmllint` is a qtchooser stub
+pointing at a Qt5 binary that isn't installed. It exits non-zero with "could
+not exec" and prints no `error:` line — and the check, which looked for
+`error:`, reported OK for a file it had never parsed. The fix is a probe: the
+linter must accept known-good QML **and** reject known-bad QML before its
+verdict is trusted, otherwise skip loudly. Same shape as the `--check` that
+wrote, one layer further out: this time the lie came from a tool rather than
+from our own code.
 
 **Duplicated rules are invisible.** While editing `waybar/style.css` an
 identical `#workspaces button.urgent` block ended up in the file twice — valid

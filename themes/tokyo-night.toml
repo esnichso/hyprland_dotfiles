@@ -15,12 +15,6 @@ dark = true
 gtk_theme = "Adwaita-dark"
 icon_theme = "Papirus-Dark"
 
-# Login screen (SDDM). Applied by install/sddm.sh, which needs root — this
-# is only the name. No Tokyo Night SDDM theme exists. Mocha is the nearest dark
-# base and blue is this theme's accent, so the login screen reads as the
-# same desktop even though the palette underneath is not identical.
-# Requires the matching AUR package; see install/packages-aur.txt.
-sddm_theme = "catppuccin-mocha-blue"
 
 [palette]
 crust    = "#16161e"

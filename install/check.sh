@@ -156,6 +156,61 @@ while IFS= read -r f; do
 	fi
 done < <(find config install -name '*.sh' | sort)
 
+say "SDDM theme (QML)"
+# The login screen is the one thing here you cannot fix from inside the
+# desktop, so it gets a parser rather than a read-through. qmllint ships with
+# qt6-declarative; absent on the dev host, present in the VM.
+# A linter on $PATH is not a linter that works. On this dev host /usr/bin/
+# qmllint is a qtchooser stub pointing at a Qt5 binary that isn't installed:
+# it exits non-zero with "could not exec" and prints no "error:" line. The
+# first version of this check read that as a pass and rubber-stamped a file it
+# had never parsed.
+#
+# So prove the tool before trusting it: it must accept valid QML AND reject
+# invalid QML. Anything else and we skip loudly rather than pass quietly.
+QMLLINT=""
+QMLTMP="$(mktemp -d)"
+trap 'rm -rf "$QMLTMP"' EXIT
+printf 'import QtQuick\nItem { Text { text: "x" } }\n' >"$QMLTMP/Good.qml"
+printf 'import QtQuick\nItem { Text { text: "x"\n' >"$QMLTMP/Bad.qml"
+for c in qmllint-qt6 qmllint6 /usr/lib/qt6/bin/qmllint qmllint; do
+	command -v "$c" >/dev/null 2>&1 || continue
+	"$c" "$QMLTMP/Good.qml" >/dev/null 2>&1 || continue
+	"$c" "$QMLTMP/Bad.qml" >/dev/null 2>&1 && continue
+	QMLLINT="$c"
+	break
+done
+
+if [[ -n $QMLLINT ]]; then
+	for f in sddm/hypersetup/*.qml; do
+		[[ -f $f ]] || continue
+		if out="$("$QMLLINT" "$f" 2>&1)"; then
+			ok "$f"
+		else
+			bad "$f"
+			printf '%s\n' "$out" | sed 's/^/        /'
+		fi
+	done
+else
+	echo "  no working qmllint — skipping"
+	echo "  (expected on the dev host; in the VM: pacman -S qt6-declarative)"
+fi
+# The palette Main.qml reads. Every colour it uses must exist, or the greeter
+# comes up with black text on a black background and no error anywhere.
+if [[ -f sddm/hypersetup/theme.conf ]]; then
+	if python3 - <<'PY'; then ok "sddm/hypersetup/theme.conf covers Main.qml"; else bad "sddm/hypersetup/theme.conf"; fi
+import configparser, re, sys
+cp = configparser.ConfigParser()
+cp.read("sddm/hypersetup/theme.conf")
+have = {k.lower() for k in cp["General"]}
+want = set(re.findall(r'\bconfig\.([A-Za-z_][A-Za-z0-9_]*)', open("sddm/hypersetup/Main.qml", encoding="utf-8").read()))
+missing = sorted(k for k in want if k.lower() not in have)
+if missing:
+    print("        Main.qml reads keys theme.conf does not define: " + ", ".join(missing))
+    sys.exit(1)
+PY
+fi
+
 say "fish"
 # Skips on the dev host, where fish isn't installed — so this only really
 # runs when check.sh is run inside the VM. Worth having anyway: nothing else

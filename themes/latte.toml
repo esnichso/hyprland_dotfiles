@@ -10,10 +10,6 @@ dark = false
 gtk_theme = "catppuccin-latte-mauve-standard+default"
 icon_theme = "Papirus-Light"
 
-# Login screen (SDDM). Applied by install/sddm.sh, which needs root — this
-# is only the name. Same flavour, same accent — the one light login screen.
-# Requires the matching AUR package; see install/packages-aur.txt.
-sddm_theme = "catppuccin-latte-mauve"
 
 [palette]
 crust    = "#dce0e8"
