@@ -121,14 +121,56 @@ no file pickers, no password prompts, freezing apps).
 | `otf-font-awesome` | extra | 7.3.1 | Waybar icon fallback. (`ttf-font-awesome` does not exist — common typo in old guides.) |
 | `nwg-look` | extra | 1.1.1 | GTK theme/icon/font settings GUI. |
 | `papirus-icon-theme` | extra | 20250501 | Icon theme with good Catppuccin folder variants. |
-| `qt6ct` | extra | 0.11 | Qt6 appearance control. |
+| `qt6ct` | extra | 0.11 | Qt6 appearance control. **Does not reach KDE apps** — see the note below. |
 | `qt5ct` | extra | 1.9 | Qt5 appearance control. |
+| `libva-utils` | extra | 2.24.0 | `vainfo`, the only way to confirm hardware video decode is actually being used. |
+
+**Shell tooling.** Every one of these replaces a coreutil with a better
+version of it; `config/fish/config.fish` wires them up and degrades cleanly if
+any is missing.
+
+| Package | Repo | Version | Why |
+| --- | --- | --- | --- |
+| `fzf` | extra | 0.74.1 | Fuzzy finder. Ships its own fish integration (`fzf --fish`) since 0.48 — Ctrl+R over history, Ctrl+T for files, Alt+C to cd, no plugin manager. |
+| `zoxide` | extra | 0.10.0 | `z proj` jumps to the directory you use most. `cd` is left alone deliberately. |
+| `eza` | extra | 0.23.5 | `ls` with git status and a tree mode. |
+| `bat` | extra | 0.26.1 | `less` with syntax highlighting; also used as `MANPAGER`. |
+| `fd` | extra | 10.4.2 | Fast find that respects `.gitignore` — makes fzf's Ctrl+T useful inside a repo. |
+| `ripgrep` | extra | 15.2.0 | Fast grep. |
+
+**rofi plugins.**
+
+| Package | Repo | Version | Why |
+| --- | --- | --- | --- |
+| `rofi-calc` | extra | 2.5.1 | Calculator mode via libqalculate (`SUPER+ALT+C`). Rebuilt against rofi 2.0. Passed with `-modi calc` on the keybind rather than listed in `config.rasi`: rofi warns on every launch about modes it can't find. |
+| `rofimoji` | extra | 6.7.0 | Emoji and Nerd Font glyph picker (`SUPER+ALT+E`). |
+
+### Why Dolphin ignored all of this
+
+`qt6ct` themes Qt applications, but **KDE Frameworks applications build their
+palette from `KColorScheme`, which reads `~/.config/kdeglobals`** — not from
+the Qt platform theme. Nothing had ever written a `kdeglobals`, so Dolphin,
+Ark and Okular fell back to Breeze Light on an otherwise dark desktop while
+`pavucontrol` and every other Qt app followed the theme correctly.
+
+`install/set-theme.py` now generates `config/kdeglobals` from the palette,
+which costs no packages. If a KDE app still looks wrong after that, the
+established escalation is:
+
+```bash
+paru -S qt6ct-kde     # conflicts with qt6ct; replaces it
+```
+
+It is `qt6ct` patched to apply the KDE integration bits as well. It is AUR
+(0.11-7, actively maintained) and it can fall out of sync with a Qt update, at
+which point it needs rebuilding — which is why it isn't the default here.
 
 **AUR** (CachyOS ships `paru`; `pacman` won't find these):
 
 | Package | AUR version | Why |
 | --- | --- | --- |
-| `catppuccin-gtk-theme-mocha` | 1.0.3-1 | GTK side of the Mocha palette. |
+| `catppuccin-gtk-theme-mocha` | 1.0.3-1 | GTK side of the Mocha palette. Installs `/usr/share/themes/catppuccin-mocha-<accent>-standard+default` — the directory name `gtk_theme` in `themes/mocha.toml` has to match exactly. **If this is missing, GTK falls back to Adwaita silently**, honours the dark preference, and gives you a dark grey desktop that is very nearly right; `install/doctor.sh` checks for it. |
+| `catppuccin-gtk-theme-frappe` / `-macchiato` / `-latte` | 1.0.3 | The other flavours, for the matching themes. Optional — those themes fall back to a recoloured Adwaita without them. |
 | `gtk-engine-murrine` | 0.98.2-5 | Required by most GTK2/3 themes; missing it silently breaks theming. |
 | `bibata-cursor-theme-bin` | 2.0.7-1 | Cursor theme that actually looks right at 1× and 2× scale. **The `-bin` variant deliberately** — the source package builds the cursors with `python-clickgen`, dragging in Pillow, numpy and BLAS/LAPACK (~20 packages that stay installed). `-bin` is the same release, prebuilt, zero dependencies. |
 
@@ -162,6 +204,8 @@ tell me what you want and I'll fold them in.
 | `kvantum` | Would give richer Qt widget rendering, but the Catppuccin Kvantum theme isn't packaged for Arch — it must be fetched from GitHub by hand. `qt6ct`'s Fusion style with a custom palette (`config/qt6ct/colors/`) themes Qt apps completely with nothing downloaded. |
 | `hyprqt6engine` | Would theme Qt6 apps via Hyprland's own toolkit, but it's at 0.1.0 and AUR-only. `qt6ct` with a custom palette lives in the official repos and needs nothing downloaded. |
 | `yay` | CachyOS ships `paru`. One AUR helper is enough. |
+| `nm-applet`'s autostart | `network-manager-applet` stays installed — `nm-connection-editor` comes from it — but its tray icon is suppressed by `config/autostart/nm-applet.desktop`. It duplicated Waybar's network module, with different behaviour on click. |
+| `wtype` | Only needed to make `rofimoji` *type* rather than copy. Typing depends on the focused app accepting synthetic key events, which Electron apps often don't; copying always works. |
 
 ## Rough footprint
 

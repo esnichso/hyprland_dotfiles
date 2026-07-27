@@ -78,10 +78,26 @@ The `Print` variants still work if you dock a keyboard that has one.
 | `SUPER` + `SHIFT` + `S` | Select a region → annotate in satty |
 | `SUPER` + `SHIFT` + `D` | Whole screen → annotate in satty |
 | `SUPER` + `SHIFT` + `A` | Select a region → straight to clipboard |
-| `SUPER` + `SHIFT` + `V` | Clipboard history |
 | `SUPER` + `SHIFT` + `C` | Colour picker → hex to clipboard |
 
 In satty: `Ctrl`+`C` copies, `Ctrl`+`S` saves to `~/Pictures/Screenshots`.
+
+## Clipboard, emoji, calculator
+
+| Keys | Action |
+| --- | --- |
+| `SUPER` + `SHIFT` + `V` | Clipboard history — everything you've copied |
+| `SUPER` + `ALT` + `V` | Clear the clipboard history |
+| `SUPER` + `ALT` + `E` | Emoji picker → copies to clipboard |
+| `SUPER` + `ALT` + `C` | Calculator — type an expression, Return copies the result |
+
+The clipboard history is recorded by `cliphist`, started from `autostart.lua`.
+It survives closing the app you copied from, which plain Wayland does not:
+`wl-clip-persist` holds the contents. It also persists across reboots, so
+**clear it after copying a password** — that's what `SUPER`+`ALT`+`V` is for.
+
+The emoji picker copies rather than types. Typing needs synthetic key events,
+which Electron apps frequently ignore; pasting always works.
 
 ## Notifications and session
 
@@ -167,3 +183,15 @@ changing wallpaper never leaves you with a dirty git tree.
 One palette file per theme in `themes/`. Editing `accent` there restyles the
 active workspace, window borders, launcher selection, prompt and sliders
 together — see the Colours section of README.md.
+
+Six themes ship: `mocha`, `macchiato`, `frappe` and `latte` (Catppuccin, dark
+to light), plus `tokyo-night` and `gruvbox`.
+
+Two things do **not** change live, whatever the picker does:
+
+- **Running GTK apps.** GTK reads its theme name once, at startup. Restart the
+  app, or log out.
+- **Running Qt and KDE apps.** Same reason.
+
+Everything else — the bar, rofi, notifications, kitty, the lock screen, fish —
+updates without a restart.

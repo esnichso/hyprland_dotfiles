@@ -70,10 +70,18 @@ generated two ways, depending on what each format supports:
 | Mechanism | Used for |
 | --- | --- |
 | A generated file the real config imports | waybar/swaync CSS (`@import`), kitty (`include`), rofi (`@import`), fish (`source`), hyprlock (`source`) |
-| A marked region replaced in place | `starship.toml`, `waybar/config.jsonc`, `gtk-3.0/settings.ini` — no import mechanism exists |
+| A whole generated file | `kdeglobals` (KDE apps), `gtk-3.0/gtk.css`, `hypr/theme.env` (read by `scripts/theme.sh`) — the format has no user half worth preserving |
+| A marked region replaced in place | `starship.toml`, `waybar/config.jsonc`, `gtk-3.0/settings.ini`, `qt6ct.conf`, `qt5ct.conf` — no import mechanism exists |
 
 Generated files say so in their header. Edit `themes/*.toml`, never them —
 `check.sh` fails if they drift out of sync.
+
+Six themes ship: `mocha`, `macchiato`, `frappe`, `latte`, `tokyo-night` and
+`gruvbox`. The last two aren't Catppuccin, which is the point — the slot names
+are generic, so any palette organised as "three backgrounds, three surfaces,
+three muted foregrounds, three text shades, fourteen accents" drops straight
+in. They have no packaged GTK theme, so GTK apps get a recoloured Adwaita
+rather than a real theme; everything else is unaffected.
 
 `[roles]` is the part worth knowing about: `accent`, `urgent`, `warning`,
 `success` map semantic meaning onto palette entries, and the configs reference
@@ -87,10 +95,25 @@ edit.
 ./install/check.sh
 ```
 
-Validates Lua, JSONC, GTK CSS, TOML and the shell scripts, and looks for
-duplicate keybinds. The CSS check uses GTK's own parser — worth having, because
-GTK rejects an entire stylesheet over one unknown pseudo-class and the only
-symptom is an unstyled bar.
+Validates Lua, JSONC, GTK CSS, TOML, every theme, the rofi themes and the shell
+scripts, and looks for duplicate keybinds. The CSS check uses GTK's own parser —
+worth having, because GTK rejects an entire stylesheet over one unknown
+pseudo-class and the only symptom is an unstyled bar.
+
+## Checking a running session
+
+`check.sh` validates files on the dev host. It cannot tell you whether audio,
+screensharing or the clipboard actually work — for that, run this **inside the
+desktop**:
+
+```bash
+./install/doctor.sh
+```
+
+It reports on the session, PipeWire, the portals (screenshare and file
+pickers), clipboard watchers, the notification daemon, fonts, whether the GTK
+theme it's been told to use is installed at all, and hardware video
+acceleration. It changes nothing.
 
 ## Decisions
 

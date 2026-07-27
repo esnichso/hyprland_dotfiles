@@ -51,6 +51,11 @@ edit here  →  ./install/check.sh  →  commit  →  push  →  user pulls in t
   *symptom* are ambiguous; ask for `waybar` / `hyprlock --verbose` / `rofi`
   stderr when the cause isn't obvious from the config.
 
+`check.sh` only sees files. Whether the session's *services* work — audio,
+the screencast portal, the clipboard watchers, the fonts, whether the GTK theme
+named in the config exists — is `install/doctor.sh`, run inside the desktop.
+Ask the user to run it before guessing at a symptom.
+
 ### What check.sh validates
 
 Lua (`luac` when present), JSONC, **GTK CSS via GTK's own parser**, TOML, shell
@@ -122,6 +127,39 @@ comes up completely unstyled. Validate with GTK's parser, never by eye.
 **swaync's `config.json` is strict JSON.** A single `//` comment stops the
 daemon starting. Explanations go in `config/swaync/NOTES.md`.
 
+**GTK CSS selectors are node names, not classes.** `trough` and `slider` are
+the nodes a *slider* is built from — and also the nodes a *scrollbar* is built
+from. An unqualified `slider { min-width: 14px }` written for the volume
+control made every scrollbar in the notification centre 14px wide. Scope
+widget styling to its parent (`scale slider`), always.
+
+**Waybar's class names differ per compositor module.** `hyprland/workspaces`
+emits `empty`, `active`, `urgent`, `special`, `persistent`. Sway's module
+emits `focused`, `visible`, `occupied`. A rule for the wrong one parses
+perfectly and does nothing — there is no error and no visual difference to
+notice. Check the module's own docs, not "waybar workspaces CSS".
+
+Ordering matters too: an active workspace can also be empty, so `.empty` has
+to sit *above* `.active` in the file or it repaints muted text onto the accent
+fill.
+
+**qt6ct does not reach KDE applications.** KDE Frameworks apps build their
+palette from `KColorScheme`, which reads `~/.config/kdeglobals`; the Qt
+platform theme is bypassed. That is why Dolphin stayed Breeze Light while
+every other Qt app followed the theme. `kdeglobals` is generated now. Its
+colours are `r,g,b` **decimals** — a hex string parses as `0,0,0`.
+
+**A missing GTK theme fails silently and convincingly.** GTK falls back to
+Adwaita, still honours `gtk-application-prefer-dark-theme`, and hands you a
+dark grey desktop that looks *almost* like the theme you asked for. Before
+debugging colours, check the theme is installed at all:
+`ls /usr/share/themes ~/.themes`. `install/doctor.sh` does this.
+
+**rofi warns on every launch about modes it cannot find.** Listing a plugin
+mode (`calc`) in `config.rasi`'s `modes:` means anyone without the plugin gets
+stderr noise on every launcher open. Pass plugin modes with `-modi` on the one
+keybind that uses them.
+
 **Transparency has two independent layers.** A Hyprland window-rule `opacity`
 fades text along with the background; the terminal's own `background_opacity`
 fades only the background. And `decoration.blur.xray = true` makes floating
@@ -164,6 +202,20 @@ a comment — and printed "rewrote launcher.rasi" regardless. That wrong claim
 was then reported to the user as fact, and cost a round trip to discover.
 
 Check the file, not the script's own success message.
+
+A second of the same shape, found later: `set-theme.py --check` wrote every
+file it claimed to be inspecting. It reported drift once, silently repaired
+it, and passed on the next run — so `check.sh`'s drift detection could never
+fail twice, and rendering any theme with `--check` swapped the live palette as
+a side effect. A `--check` flag that mutates is worse than no check at all,
+because it manufactures the green result it is asked for.
+
+Both bugs are the same mistake: trusting an operation's report of itself
+instead of the state it left behind.
+
+**Duplicated rules are invisible.** While editing `waybar/style.css` an
+identical `#workspaces button.urgent` block ended up in the file twice — valid
+CSS, no warning, no visual difference. Re-read the region you edited.
 
 ## User preferences
 
