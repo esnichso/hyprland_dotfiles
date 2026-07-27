@@ -156,6 +156,22 @@ while IFS= read -r f; do
 	fi
 done < <(find config install -name '*.sh' | sort)
 
+say "fish"
+# Skips on the dev host, where fish isn't installed — so this only really
+# runs when check.sh is run inside the VM. Worth having anyway: nothing else
+# in the repo can parse fish, and a broken function file is silent until the
+# next interactive shell.
+if command -v fish >/dev/null 2>&1; then
+	while IFS= read -r f; do
+		if fish --no-execute "$f" 2>/dev/null; then ok "$f"; else
+			bad "$f"
+			fish --no-execute "$f" 2>&1 | sed 's/^/        /'
+		fi
+	done < <(find config/fish -name '*.fish' | sort)
+else
+	echo "  fish not found — skipping (this is expected on the dev host)"
+fi
+
 say "rofi themes"
 if ./install/check-rofi.py; then :; else FAIL=1; fi
 
